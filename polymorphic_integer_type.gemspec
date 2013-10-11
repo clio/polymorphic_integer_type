@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = PolymorphicIntegerType::VERSION
   spec.authors       = ["Kyle d'Oliveira"]
   spec.email         = ["kyle@goclio.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{Allows the *_type field in the DB to be an integer rather than a string}
+  spec.summary       = %q{Use integers rather than strings for the _type field}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -20,4 +20,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec"
+  
 end

@@ -34,7 +34,7 @@ describe PolymorphicIntegerType do
 
   context "When a link is given polymorphic record" do
     let(:link) { Link.create(:source => source) }
-    let(:source) { dog }
+    let(:source) { cat }
     include_examples "proper source"
 
     context "and when it already has a polymorphic record" do
@@ -50,7 +50,7 @@ describe PolymorphicIntegerType do
 
   context "When a link is given polymorphic id and type" do
     let(:link) { Link.create(:source_id => source.id, :source_type => source.class.to_s) }
-    let(:source) { dog }
+    let(:source) { cat }
     include_examples "proper source"
 
     context "and when it already has a polymorphic id and type" do
@@ -62,4 +62,20 @@ describe PolymorphicIntegerType do
     end
 
   end
+
+  context "When using a through relation to the links with eagar loading" do
+    let!(:links){
+      [Link.create(:source => source, :target => kibble),
+        Link.create(:source => source, :target => water)]
+    }
+    let(:source) { dog }
+
+    it "should be able to return the links and the targets" do
+      expect(owner.pet_source_links).to match_array links
+      expect(owner.pet_source_links.includes(:target).collect(&:target)).to match_array [water, kibble]
+
+    end
+
+  end
+
 end

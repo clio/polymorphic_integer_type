@@ -103,8 +103,8 @@ describe PolymorphicIntegerType do
       let(:source_2) { dog }
       it "should be able to preload both associations" do
         links = Link.includes(:source).where(:id => [link.id, link_2.id]).order(:id)
-        expect(l.first.source).to eql cat
-        expect(l.last.source).to eql dog
+        expect(links.first.source).to eql cat
+        expect(links.last.source).to eql dog
       end
 
     end

@@ -35,7 +35,7 @@ module PolymorphicIntegerType
         end
       end
 
-      def has_many(name, options = {}, &extension)
+      def remove_type_and_establish_mapping(name, options)
         integer_type = options.delete :integer_type
         if options[:as] && integer_type
           poly_type = options.delete(:as)
@@ -47,7 +47,16 @@ module PolymorphicIntegerType
           foreign_type = options.delete(:foreign_type) || "#{poly_type}_type"
           options[:conditions] ||= {foreign_type => klass_mapping.to_i}
         end
+      end
+
+      def has_many(name, options = {}, &extension)
+        remove_type_and_establish_mapping(name, options)
         super(name, options, &extension)
+      end
+
+      def has_one(name, options)
+        remove_type_and_establish_mapping(name, options)
+        super(name, options)
       end
 
 

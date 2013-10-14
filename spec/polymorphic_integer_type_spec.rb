@@ -14,6 +14,7 @@ describe PolymorphicIntegerType do
   let(:milk) { Drink.create(:name => "milk") }
   let(:water) { Drink.create(:name => "Water") }
   let(:whiskey) { Drink.create(:name => "Whiskey") }
+
   let(:link) { Link.create(:source => source, :target => target) }
 
   shared_examples "proper source" do
@@ -96,6 +97,17 @@ describe PolymorphicIntegerType do
   context "When eagar loading the polymorphic association" do
     let(:link) { Link.create(:source_id => source.id, :source_type => source.class.to_s) }
     let(:source) { cat }
+
+    context "and when there are multiples sources" do
+      let(:link_2) { Link.create(:source_id => source_2.id, :source_type => source_2.class.to_s) }
+      let(:source_2) { dog }
+      it "should be able to preload both associations" do
+        links = Link.includes(:source).where(:id => [link.id, link_2.id]).order(:id)
+        expect(l.first.source).to eql cat
+        expect(l.last.source).to eql dog
+      end
+
+    end
 
     it "should be able to preload the association" do
       l = Link.includes(:source).where(:id => link.id).first

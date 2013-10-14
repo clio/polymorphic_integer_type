@@ -1,8 +1,8 @@
 class Food < ActiveRecord::Base
 
-  has_many :target_links, :as => :target, :class_name => "Link"
+  include PolymorphicIntegerType::Extensions
 
-  has_many :people_and_animals, :through => :target_links, :source => :target
+  has_many :target_links, :as => :target, :integer_type => true, :class_name => "Link"
 
 
 end

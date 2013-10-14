@@ -1,5 +1,6 @@
 require 'support/active_record'
 require 'polymorphic_integer_type'
+require 'support/configuration'
 require 'support/link'
 require 'support/animal'
 require 'support/person'

@@ -63,6 +63,21 @@ describe PolymorphicIntegerType do
 
   end
 
+  context "When using a relation to the links with eagar loading" do
+    let!(:links){
+      [Link.create(:source => source, :target => kibble),
+        Link.create(:source => source, :target => water)]
+    }
+    let(:source) { cat }
+
+    it "should be able to return the links and the targets" do
+      expect(cat.source_links).to match_array links
+      expect(cat.source_links.includes(:target).collect(&:target)).to match_array [water, kibble]
+
+    end
+
+  end
+
   context "When using a through relation to the links with eagar loading" do
     let!(:links){
       [Link.create(:source => source, :target => kibble),
@@ -75,6 +90,18 @@ describe PolymorphicIntegerType do
       expect(owner.pet_source_links.includes(:target).collect(&:target)).to match_array [water, kibble]
 
     end
+
+  end
+
+  context "When eagar loading the polymorphic association" do
+    let(:link) { Link.create(:source_id => source.id, :source_type => source.class.to_s) }
+    let(:source) { cat }
+
+    it "should be able to preload the association" do
+      l = Link.includes(:source).where(:id => link.id).first
+      expect(l.source).to eql cat
+    end
+
 
   end
 

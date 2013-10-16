@@ -33,6 +33,12 @@ describe PolymorphicIntegerType do
     end
   end
 
+  context "When a link is created through an association" do
+    let(:link) { source.source_links.create }
+    let(:source) { cat }
+    include_examples "proper source"
+    
+  end
   context "When a link is given polymorphic record" do
     let(:link) { Link.create(:source => source) }
     let(:source) { cat }
@@ -116,5 +122,6 @@ describe PolymorphicIntegerType do
 
 
   end
+  
 
 end

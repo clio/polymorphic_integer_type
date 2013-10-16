@@ -17,7 +17,10 @@ module PolymorphicIntegerType
           end
 
           define_method "#{foreign_type}=" do |klass|
-            enum = mapping.key(klass.to_s)
+            case klass
+            when Integer then enum = klass
+            when String then enum = mapping.key(klass)
+            end
             super(enum)
           end
 

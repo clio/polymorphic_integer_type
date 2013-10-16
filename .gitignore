@@ -13,6 +13,7 @@ lib/bundler/man
 pkg
 rdoc
 spec/reports
+spec/support/active_record.rb
 test/tmp
 test/version_tmp
 tmp

@@ -82,6 +82,14 @@ module PolymorphicIntegerType
       end
     end
 
+    def []=(attr_name, value)
+      if _polymorphic_foreign_types.include?(attr_name)
+        send("#{attr_name}=", value)
+      else
+        super(attr_name, value)
+      end
+    end
+
   end
 
 end

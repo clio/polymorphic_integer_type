@@ -37,6 +37,14 @@ describe PolymorphicIntegerType do
     let(:link) { source.source_links.create }
     let(:source) { cat }
     include_examples "proper source"
+
+    context "and the link is accessed through the associations" do
+      before { link }
+      
+      it "should have the proper source" do
+        expect(source.source_links[0].source).to eql source
+      end
+    end
     
   end
   context "When a link is given polymorphic record" do

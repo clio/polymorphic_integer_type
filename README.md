@@ -53,17 +53,17 @@ First, include the extensions module and add the `integer_type`  option to the a
 ```ruby
 class Picture < ActiveRecord::Base
   include PolymorphicIntegerType::Extensions
-  belongs_to :imageable, polymorphic: true, :integer_type => true
+  belongs_to :imageable, polymorphic: true, integer_type: true
 end
  
 class Employee < ActiveRecord::Base
   include PolymorphicIntegerType::Extensions
-  has_many :pictures, as: :imageable, :integer_type => true
+  has_many :pictures, as: :imageable, integer_type: true
 end
  
 class Product < ActiveRecord::Base
   include PolymorphicIntegerType::Extensions
-  has_many :pictures, as: :imageable, :integer_type => true
+  has_many :pictures, as: :imageable, integer_type: true
 end
 ```
 
@@ -83,43 +83,41 @@ If you want to migrate from a polymorphic association that is already a string y
 class PictureToPolymorphicIntegerType < ActiveRecord::Migration
   
   def up
-    execute <<-SQL
-      ALTER TABLE pictures
-      ADD COLUMN new_imageable_type INTEGER
-    SQL
+    change_table :pictures do |t|
+      t.integer :new_imageable_type
+    end
 
     execute <<-SQL
       UPDATE reminders
       SET new_imageable_type = CASE imageable_type
-                               WHEN 'Employee' THEN 1
-                               WHEN 'Product' THEN 2
-                             END
+                                 WHEN 'Employee' THEN 1
+                                 WHEN 'Product' THEN 2
+                               END
     SQL
-    execute <<-SQL
-      ALTER TABLE pictures
-      DROP COLUMN imageable_type,
-      CHANGE COLUMN new_imageable_type imageable_type INTEGER
-    SQL
+
+    change_table :pictures, :bulk => true do |t|
+      t.remove :imageable_type
+      t.rename :new_imageable_type, :imageable_type
+    end
   end
 
   def down
-    execute <<-SQL
-      ALTER TABLE pictures
-      ADD COLUMN new_imageable_type VARCHAR(255)
-    SQL
+    change_table :pictures do |t|
+      t.string :new_imageable_type
+    end
 
     execute <<-SQL
       UPDATE picture
       SET new_imageable_type = CASE imageable_type
-                               WHEN 1 THEN 'Employee'
-                               WHEN 2 THEN 'Product'
-                             END
+                                 WHEN 1 THEN 'Employee'
+                                 WHEN 2 THEN 'Product'
+                               END
     SQL
-    execute <<-SQL
-      ALTER TABLE picture
-      DROP COLUMN imageable_type,
-      CHANGE COLUMN new_imageable_type imageable_type VARCHAR(255)
-    SQL
+
+    change_table :pictures, :bulk => true do |t|
+      t.remove :imageable_type
+      t.rename :new_imageable_type, :imageable_type
+    end
   end
 end
 ```

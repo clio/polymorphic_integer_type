@@ -29,7 +29,7 @@ class CreatePictures < ActiveRecord::Migration
 end
 ```
 
-The problem with this approach is the `imageable_type` is a string (and by default it is 255 characters). This is a little rediculous. For comparison, if we had a state machine with X states, would be describe the states with strings `"State1", "State2", etc` or would be just enumerate the state column and make it an integer. This gem will make it so we can use an integer for the `imageable_type` column. 
+The problem with this approach is that `imageable_type` is a string (and by default it is 255 characters). This is a little ridiculous. For comparison, if we had a state machine with X states, would we describe the states with strings `"State1", "State2", etc` or would we just enumerate the state column and make it an integer? This gem will allow us to use an integer for the `imageable_type` column. 
 
 ## Installation
 
@@ -49,7 +49,7 @@ Or install it yourself as:
 
 The gem is pretty straightforward to use.
 
-First, include the extensions module and add the `integer_type`  option to the assocaitions that are going to be using this. (That way it will play nicely with polymorphic association you would rather the type remain as a string)
+First, include the extensions module and add the `integer_type`  option to the associations that are going to be using this. (That way it will play nicely with polymorphic associations whose type you would rather leave as a string.)
 ```ruby
 class Picture < ActiveRecord::Base
   include PolymorphicIntegerType::Extensions
@@ -76,9 +76,9 @@ PolymorphicIntegerType::Mapping.configuration do |config|
 end 
 ```
 
-Note: The mapping here can start from whatever integer you wish, but I would advise not to use 0. The reason being that if you had a new class, for instance `Avatar`, and also wanted to use this polymorphic association but forgot to include it in the mapping, it would effectively get `to_i` called on it and stored in the database. `"Avatar".to_i == 0` so if your mapping included 0, this would create a weird bug. 
+Note: The mapping here can start from whatever integer you wish, but I would advise not using 0. The reason being that if you had a new class, for instance `Avatar`, and also wanted to use this polymorphic association but forgot to include it in the mapping, it would effectively get `to_i` called on it and stored in the database. `"Avatar".to_i == 0`, so if your mapping included 0, this would create a weird bug. 
 
-If you want to migrate from a polymorphic association that is already a string you'll need to setup a migration (assuming sql for the time being. But this should be pretty straightforward)
+If you want to convert a polymorphic association that is already a string, you'll need to set up a migration. (Assuming SQL for the time being, but this should be pretty straightforward.)
 ```ruby
 class PictureToPolymorphicIntegerType < ActiveRecord::Migration
   
@@ -122,7 +122,7 @@ class PictureToPolymorphicIntegerType < ActiveRecord::Migration
 end
 ```
 
-Lastly, you will need to be careful of any place where you are doing raw sql queries with the string (`imageable_type = 'Employee'`). They should use the integer instead
+Lastly, you will need to be careful of any place where you are doing raw SQL queries with the string (`imageable_type = 'Employee'`). They should use the integer instead.
   
 
 

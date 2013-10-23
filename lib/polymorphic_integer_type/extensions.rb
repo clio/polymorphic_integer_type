@@ -54,7 +54,7 @@ module PolymorphicIntegerType
         super(name, options, &extension)
       end
 
-      def has_one(name, options)
+      def has_one(name, options = {})
         remove_type_and_establish_mapping(name, options)
         super(name, options)
       end

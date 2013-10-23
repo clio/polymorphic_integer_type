@@ -1,6 +1,6 @@
 # PolymorphicIntegerType
 
-Rails' polymorphic assocaitions are pretty useful. The example they give to set it up looks like:
+Rails' polymorphic associations are pretty useful. The example they give to set it up looks like:
 ```ruby
 class Picture < ActiveRecord::Base
   belongs_to :imageable, polymorphic: true

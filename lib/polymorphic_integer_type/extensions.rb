@@ -3,7 +3,7 @@ module PolymorphicIntegerType
   module Extensions
     module ClassMethods
 
-      def belongs_to(name, options = {})
+      def belongs_to(name, scope = nil, options = {})
         integer_type = options.delete :integer_type
         super
         if options[:polymorphic] && integer_type
@@ -45,18 +45,18 @@ module PolymorphicIntegerType
 
           options[:foreign_key] ||= "#{poly_type}_id"
           foreign_type = options.delete(:foreign_type) || "#{poly_type}_type"
-          options[:lambda] ||= ->(n){where(foreign_type => klass_mapping.to_i)}
+          options[:scope] ||= ->(n){where(foreign_type => klass_mapping.to_i)}
         end
       end
 
-      def has_many(name, options = {}, &extension)
+      def has_many(name, scope = nil, options = {}, &extension)
         remove_type_and_establish_mapping(name, options)
-        super(name, options.delete(:lambda), &extension)
+        super(name, options.delete(:scope), &extension)
       end
 
-      def has_one(name, options = {})
+      def has_one(name, scope = nil, options = {})
         remove_type_and_establish_mapping(name, options)
-        super(name, options.delete(:lambda), options)
+        super(name, options.delete(:scope), options)
       end
 
 

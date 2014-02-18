@@ -45,18 +45,18 @@ module PolymorphicIntegerType
 
           options[:foreign_key] ||= "#{poly_type}_id"
           foreign_type = options.delete(:foreign_type) || "#{poly_type}_type"
-          options[:conditions] ||= {foreign_type => klass_mapping.to_i}
+          options[:lambda] ||= ->(n){where(foreign_type => klass_mapping.to_i)}
         end
       end
 
       def has_many(name, options = {}, &extension)
         remove_type_and_establish_mapping(name, options)
-        super(name, options, &extension)
+        super(name, options.delete(:lambda), &extension)
       end
 
       def has_one(name, options = {})
         remove_type_and_establish_mapping(name, options)
-        super(name, options)
+        super(name, options.delete(:lambda))
       end
 
 

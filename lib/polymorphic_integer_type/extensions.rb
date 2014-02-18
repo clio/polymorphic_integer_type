@@ -56,7 +56,7 @@ module PolymorphicIntegerType
 
       def has_one(name, options = {})
         remove_type_and_establish_mapping(name, options)
-        super(name, options.delete(:lambda))
+        super(name, options.delete(:lambda), options)
       end
 
 

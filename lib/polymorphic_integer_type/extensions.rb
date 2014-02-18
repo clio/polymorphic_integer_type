@@ -4,6 +4,7 @@ module PolymorphicIntegerType
     module ClassMethods
 
       def belongs_to(name, scope = nil, options = {})
+        options = scope if scope.kind_of? Hash
         integer_type = options.delete :integer_type
         super
         if options[:polymorphic] && integer_type
@@ -50,11 +51,13 @@ module PolymorphicIntegerType
       end
 
       def has_many(name, scope = nil, options = {}, &extension)
+        options = scope if scope.kind_of? Hash
         remove_type_and_establish_mapping(name, options)
         super(name, options.delete(:scope), &extension)
       end
 
       def has_one(name, scope = nil, options = {})
+        options = scope if scope.kind_of? Hash
         remove_type_and_establish_mapping(name, options)
         super(name, options.delete(:scope), options)
       end

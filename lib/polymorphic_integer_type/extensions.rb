@@ -45,7 +45,8 @@ module PolymorphicIntegerType
 
           options[:foreign_key] ||= "#{poly_type}_id"
           foreign_type = options.delete(:foreign_type) || "#{poly_type}_type"
-          options[:conditions] ||= {foreign_type => klass_mapping.to_i}
+          options[:conditions] ||= {}
+          options[:conditions].merge!({foreign_type => klass_mapping.to_i})
         end
       end
 

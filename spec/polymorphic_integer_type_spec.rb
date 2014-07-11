@@ -131,5 +131,15 @@ describe PolymorphicIntegerType do
 
   end
   
+  context "when the association is an STI table" do
+    let(:link) { Link.create(:source => source, :target => whiskey) }
+    let(:source) { Dog.create(:name => "Bela", :kind => "Dog", :owner => owner) }
+    it "should have the proper id, type and object for the source" do
+      expect(link.source_id).to eql source.id
+      expect(link.source_type).to eql "Animal"
+      expect(link.source).to eql source
+    end
+  end
+  
 
 end

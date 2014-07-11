@@ -17,6 +17,7 @@ module PolymorphicIntegerType
           end
 
           define_method "#{foreign_type}=" do |klass|
+            klass = klass.base_class if klass.kind_of?(Class)
             enum = mapping.key(klass.to_s) || klass
             super(enum)
           end

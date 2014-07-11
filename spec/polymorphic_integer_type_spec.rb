@@ -17,6 +17,16 @@ describe PolymorphicIntegerType do
 
   let(:link) { Link.create(:source => source, :target => target) }
 
+  context "when the source is nil" do
+    let(:source) { nil }
+    let(:target) { nil }
+    it "should have the no id/type for the source" do
+      expect(link.source_id).to be_nil
+      expect(link.source_type).to be_nil
+      expect(link.source).to be_nil
+    end
+  end
+
   shared_examples "proper source" do
     it "should have the proper id, type and object for the source" do
       expect(link.source_id).to eql source.id

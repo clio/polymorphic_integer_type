@@ -16,9 +16,12 @@ module PolymorphicIntegerType
             mapping[t]
           end
 
-          define_method "#{foreign_type}=" do |klass|
-            klass = klass.base_class if klass.kind_of?(Class)
+          define_method "#{foreign_type}=" do |klass|            
+            klass = klass.base_class if klass.kind_of?(Class) && klass <= ActiveRecord::Base
             enum = mapping.key(klass.to_s) || klass
+            if enum == NilClass
+              enum = nil
+            end
             super(enum)
           end
 

@@ -55,7 +55,7 @@ module PolymorphicIntegerType
       def has_many(name, scope = nil, options = {}, &extension)
         options = scope if scope.kind_of? Hash
         remove_type_and_establish_mapping(name, options)
-        super(name, options.delete(:scope), &extension)
+        super(name, options.delete(:scope), options &extension)
       end
 
       def has_one(name, scope = nil, options = {})

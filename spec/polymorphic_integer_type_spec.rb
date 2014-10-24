@@ -151,5 +151,17 @@ describe PolymorphicIntegerType do
     end
   end
   
+  context "rails 4 scope problem" do
+    let(:rails4_scope) {Rails4Scope.create()}
+    let(:rails4_target) {Rails4Target.create(scope_tester: rails4_scope, extra: true)}
+
+    it "should create queries with valid scopes" do
+      the_target = rails4_target
+      scope_query = rails4_scope.rails4_targets
+
+      expect(scope_query.to_sql).to match(/extra/)
+      expect(scope_query.first).to eq(the_target)
+    end
+  end
 
 end

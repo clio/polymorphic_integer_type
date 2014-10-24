@@ -38,7 +38,7 @@ module PolymorphicIntegerType
         end
       end
 
-      def remove_type_and_establish_mapping(name, options)
+      def remove_type_and_establish_mapping(name, options, scope)
         integer_type = options.delete :integer_type
         if options[:as] && integer_type
           poly_type = options.delete(:as)
@@ -48,19 +48,32 @@ module PolymorphicIntegerType
 
           options[:foreign_key] ||= "#{poly_type}_id"
           foreign_type = options.delete(:foreign_type) || "#{poly_type}_type"
-          options[:scope] ||= ->(n){where(foreign_type => klass_mapping.to_i)}
+
+          options[:scope] ||= proc do |*args|
+            result = self.where(foreign_type => klass_mapping.to_i)
+            result = result.instance_exec(*args, &scope) if scope.is_a?(Proc)
+            result
+          end
         end
       end
 
       def has_many(name, scope = nil, options = {}, &extension)
-        options = scope if scope.kind_of? Hash
-        remove_type_and_establish_mapping(name, options)
-        super(name, options.delete(:scope), options &extension)
+        if scope.kind_of? Hash
+          options = scope 
+          scope = nil
+        end
+
+        remove_type_and_establish_mapping(name, options, scope)
+        super(name, options.delete(:scope), options, &extension)
       end
 
       def has_one(name, scope = nil, options = {})
-        options = scope if scope.kind_of? Hash
-        remove_type_and_establish_mapping(name, options)
+        if scope.kind_of? Hash
+          options = scope 
+          scope = nil
+        end
+
+        remove_type_and_establish_mapping(name, options, scope)
         super(name, options.delete(:scope), options)
       end
 

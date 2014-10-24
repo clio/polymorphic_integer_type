@@ -49,9 +49,9 @@ module PolymorphicIntegerType
           options[:foreign_key] ||= "#{poly_type}_id"
           foreign_type = options.delete(:foreign_type) || "#{poly_type}_type"
 
-          options[:scope] ||= proc do |n|
+          options[:scope] ||= proc do |*args|
             result = self.where(foreign_type => klass_mapping.to_i)
-            result = result.instance_exec(&scope) if scope.is_a?(Proc)
+            result = result.instance_exec(*args, &scope) if scope.is_a?(Proc)
             result
           end
         end

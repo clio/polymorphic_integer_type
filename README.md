@@ -45,6 +45,8 @@ Or install it yourself as:
 
     $ gem install polymorphic_integer_type
 
+For Rails 3.2 use version < 2. Version >= 2 has been tested on Rails 4.2 and Ruby 2.1
+
 ## Usage
 
 The gem is pretty straightforward to use.

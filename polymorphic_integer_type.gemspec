@@ -21,8 +21,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.2"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"
-  spec.add_development_dependency "activerecord", "3.2.11"
-  spec.add_development_dependency "mysql", "2.8.1"
-  spec.add_development_dependency "debugger"  
+  spec.add_development_dependency "activerecord", "4.2.0"
+  spec.add_development_dependency "mysql2", "0.3.16"
+  spec.add_development_dependency "byebug"
 
 end

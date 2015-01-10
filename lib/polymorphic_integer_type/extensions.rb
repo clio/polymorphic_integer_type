@@ -9,7 +9,7 @@ module PolymorphicIntegerType
         super
         if options[:polymorphic] && integer_type
           mapping = PolymorphicIntegerType::Mapping[name]
-          foreign_type = reflections[name].foreign_type
+          foreign_type = reflections[name.to_s].foreign_type
           self._polymorphic_foreign_types << foreign_type
 
           define_method foreign_type do

@@ -46,8 +46,11 @@ module PolymorphicIntegerType
           klass_mapping = (mapping||{}).key self.sti_name
           raise "Polymorphic Class Mapping is missing for #{poly_type}" unless klass_mapping
 
+          class_variable_set("@@poly_type_#{name}", klass_mapping.to_i)
+
           options[:foreign_key] ||= "#{poly_type}_id"
           foreign_type = options.delete(:foreign_type) || "#{poly_type}_type"
+          class_variable_set("@@foreign_type_#{name}", foreign_type)
 
           options[:scope] ||= -> {
             condition = where(foreign_type => klass_mapping.to_i)
@@ -66,7 +69,16 @@ module PolymorphicIntegerType
         end
 
         remove_type_and_establish_mapping(name, options, scope)
+        prev_callback = options.delete(:before_add)
+        new_callbacks = ["add_set_type_#{name}".to_sym]
+        new_callbacks << prev_callback if prev_callback
+        options = options.merge(:before_add => new_callbacks)
         super(name, options.delete(:scope), options, &extension)
+
+        define_method "add_set_type_#{name}" do |record|
+          record.send("#{self.class.class_variable_get("@@foreign_type_#{name}")}=", self.class.class_variable_get("@@poly_type_#{name}"))
+        end
+
       end
 
       def has_one(name, scope = nil, options = {})

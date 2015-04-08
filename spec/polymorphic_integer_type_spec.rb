@@ -150,6 +150,25 @@ describe PolymorphicIntegerType do
       expect(link.source).to eql source
     end
   end
-  
+
+  context "when using append operator" do
+    let(:source) { Dog.create(:name => "Bela", :kind => "Dog", :owner => owner) }
+
+    it "should have the proper id, type and object for the source" do
+      animal = cat
+      animal.source_links << Link.new
+      expect(animal.source_links.first).not_to be_nil
+      expect(animal.source_links.first.source_id).to eql animal.id
+      expect(animal.source_links.first.source_type).to eql "Animal"
+      expect(animal.source_links.first.source).to eql animal
+    end
+
+    it "should call any pre-existing before_add callbacks" do
+      animal = cat
+      animal.source_links << Link.new
+      expect(animal.source_links.first).not_to be_nil
+      expect(animal.source_links.first.comment).to eql Link::EMPTY_COMMENT
+    end
+  end
 
 end

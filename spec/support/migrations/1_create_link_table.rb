@@ -6,6 +6,7 @@ class CreateLinkTable < ActiveRecord::Migration
       t.integer :target_type
       t.integer :source_id
       t.integer :source_type
+      t.string :comment
     end
   end
 

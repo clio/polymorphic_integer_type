@@ -1,4 +1,2 @@
 class Dog < Animal
-
-
 end

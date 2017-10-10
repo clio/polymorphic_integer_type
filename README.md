@@ -51,16 +51,20 @@ For Rails 3.2 use version < 2. Version >= 2 has been tested on Rails 4.2 and Rub
 
 ## Usage
 
-The gem is pretty straightforward to use.
+Include `PolymorphicIntegerType::Extensions` into each associated model class then set the `integer_type` option on the appropriate association.
 
-First, include the extensions module and add the `integer_type`  option to the associations that are going to be using this. (That way it will play nicely with polymorphic associations whose type you would rather leave as a string.)
+For the model where the `belongs_to` is defined, set `integer_type` to hash mapping integers to strings. This hash maps an integer in the database to a Ruby class.
 
 ```ruby
 class Picture < ActiveRecord::Base
   include PolymorphicIntegerType::Extensions
-  belongs_to :imageable, polymorphic: true, integer_type: true
+  belongs_to :imageable, polymorphic: true, integer_type: {1 => "Employee", 2 => "Product"}
 end
+```
  
+ Next, set `integer_type` to true on any related `has_many` or `has_one` associations:
+
+```ruby
 class Employee < ActiveRecord::Base
   include PolymorphicIntegerType::Extensions
   has_many :pictures, as: :imageable, integer_type: true
@@ -72,17 +76,19 @@ class Product < ActiveRecord::Base
 end
 ```
 
-Second, you need to create a mapping for the polymorphic associations. This should be loaded before the models. Putting it in an initializer is good (`config/initializers/polymorphic_type_mapping.rb`)
+### External mappings
+
+You can also store polymorphic type mappings separate from your models. This should be loaded before the models. Putting it in an initializer is one way to do this (e.g., `config/initializers/polymorphic_type_mapping.rb`)
 
 ```ruby
 PolymorphicIntegerType::Mapping.configuration do |config|
-
-  config.add :imageable, {1 => "Employee", 2 => "Product" }  	
-
+  config.add :imageable, {1 => "Employee", 2 => "Product" }
 end 
 ```
 
 Note: The mapping here can start from whatever integer you wish, but I would advise not using 0. The reason being that if you had a new class, for instance `Avatar`, and also wanted to use this polymorphic association but forgot to include it in the mapping, it would effectively get `to_i` called on it and stored in the database. `"Avatar".to_i == 0`, so if your mapping included 0, this would create a weird bug. 
+
+### Migrating an existing association
 
 If you want to convert a polymorphic association that is already a string, you'll need to set up a migration. (Assuming SQL for the time being, but this should be pretty straightforward.)
 

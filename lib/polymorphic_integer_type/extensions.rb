@@ -8,9 +8,20 @@ module PolymorphicIntegerType
         integer_type = options.delete :integer_type
         super
         if options[:polymorphic] && integer_type
-          mapping = PolymorphicIntegerType::Mapping[name]
+          mapping =
+            if integer_type == true
+              PolymorphicIntegerType::Mapping[name]
+            else
+              integer_type
+            end.dup
+
           foreign_type = reflections[name.to_s].foreign_type
-          self._polymorphic_foreign_types << foreign_type
+          _polymorphic_foreign_types << foreign_type
+
+          # Required way to dynamically define a class method on the model
+          singleton_class.__send__(:define_method, "#{foreign_type}_mapping") do
+            mapping
+          end
 
           define_method foreign_type do
             t = super()
@@ -40,11 +51,30 @@ module PolymorphicIntegerType
 
       def remove_type_and_establish_mapping(name, options, scope)
         integer_type = options.delete :integer_type
+
         if options[:as] && integer_type
           poly_type = options.delete(:as)
-          mapping = PolymorphicIntegerType::Mapping[poly_type]
-          klass_mapping = (mapping||{}).key self.sti_name
-          raise "Polymorphic Class Mapping is missing for #{poly_type}" unless klass_mapping
+          class_name = options[:class_name] || name.to_s.classify
+          mapping = begin
+            belongs_to_class = class_name.constantize
+            method_name = "#{poly_type}_type_mapping"
+            if belongs_to_class.respond_to?(method_name)
+              belongs_to_class.public_send(method_name)
+            end
+          rescue NameError => e
+            STDERR.puts "Failed to load belongs_to class: #{e.message}"
+          end
+
+          mapping ||= PolymorphicIntegerType::Mapping[poly_type]
+          if mapping == nil
+            raise "Polymorphic type mapping missing for #{poly_type.inspect}"
+          end
+
+          klass_mapping = (mapping || {}).key(sti_name)
+
+          if klass_mapping == nil
+            raise "Class not found for #{sti_name.inspect} in polymorphic type mapping: #{mapping}"
+          end
 
           options[:foreign_key] ||= "#{poly_type}_id"
           foreign_type = options.delete(:foreign_type) || "#{poly_type}_type"

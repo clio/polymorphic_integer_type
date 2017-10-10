@@ -148,5 +148,53 @@ describe PolymorphicIntegerType do
     end
   end
   
-  context "when "
+  context "when mapping is given inline in the belongs_to model" do
+    class InlineLink < ActiveRecord::Base
+      include PolymorphicIntegerType::Extensions
+
+      self.table_name = "links"
+
+      belongs_to :source, polymorphic: true, integer_type: {10 => "Person", 11 => "InlineAnimal"}
+      belongs_to :target, polymorphic: true, integer_type: {10 => "Food", 13 => "InlineDrink"}
+    end
+
+    class InlineAnimal < ActiveRecord::Base
+      include PolymorphicIntegerType::Extensions
+
+      self.table_name = "animals"
+
+      belongs_to :owner, class_name: "Person"
+      has_many :source_links, as: :source, class_name: "InlineLink", integer_type: true
+    end
+
+    class InlineDrink < ActiveRecord::Base
+      include PolymorphicIntegerType::Extensions
+
+      self.table_name = "drinks"
+
+      has_many :inline_links, as: :target, integer_type: true
+    end
+
+    let!(:animal) { InlineAnimal.create!(name: "Lucy") }
+    let!(:drink) { InlineDrink.create!(name: "Water") }
+    let!(:link) { InlineLink.create!(source: animal, target: drink) }
+
+    let(:source) { animal }
+    let(:target) { drink }
+
+    include_examples "proper source"
+    include_examples "proper target"
+
+    it "creates foreign_type mapping method" do
+      expect(Link.source_type_mapping).to eq({0 => "Person", 1 => "Animal"})
+      expect(InlineLink.source_type_mapping).to eq({10 => "Person", 11 => "InlineAnimal"})
+    end
+
+    it "pulls mapping from given hash" do
+      expect(link.source_id).to eq(animal.id)
+      expect(link[:source_type]).to eq(11)
+      expect(link.target_id).to eq(drink.id)
+      expect(link[:target_type]).to eq(13)
+    end
+  end
 end

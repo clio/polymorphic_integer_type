@@ -156,6 +156,7 @@ describe PolymorphicIntegerType do
 
       belongs_to :source, polymorphic: true, integer_type: {10 => "Person", 11 => "InlineAnimal"}
       belongs_to :target, polymorphic: true, integer_type: {10 => "Food", 13 => "InlineDrink"}
+      belongs_to :normal_target, polymorphic: true
     end
 
     class InlineAnimal < ActiveRecord::Base
@@ -164,7 +165,7 @@ describe PolymorphicIntegerType do
       self.table_name = "animals"
 
       belongs_to :owner, class_name: "Person"
-      has_many :source_links, as: :source, class_name: "InlineLink", integer_type: true
+      has_many :source_links, as: :source, class_name: "InlineLink"
     end
 
     class InlineDrink < ActiveRecord::Base
@@ -172,12 +173,12 @@ describe PolymorphicIntegerType do
 
       self.table_name = "drinks"
 
-      has_many :inline_links, as: :target, integer_type: true
+      has_many :inline_links, as: :target
     end
 
     let!(:animal) { InlineAnimal.create!(name: "Lucy") }
     let!(:drink) { InlineDrink.create!(name: "Water") }
-    let!(:link) { InlineLink.create!(source: animal, target: drink) }
+    let!(:link) { InlineLink.create!(source: animal, target: drink, normal_target: drink) }
 
     let(:source) { animal }
     let(:target) { drink }
@@ -195,6 +196,61 @@ describe PolymorphicIntegerType do
       expect(link[:source_type]).to eq(11)
       expect(link.target_id).to eq(drink.id)
       expect(link[:target_type]).to eq(13)
+    end
+
+    it "doesn't break string type polymorphic associations" do
+      expect(link.normal_target).to eq(drink)
+      expect(link.normal_target_type).to eq("InlineDrink")
+    end
+  end
+
+  context "when mapping assigned to `polymorphic` option on belongs_to model" do
+    class InlineLink2 < ActiveRecord::Base
+      include PolymorphicIntegerType::Extensions
+
+      self.table_name = "links"
+
+      belongs_to :source, polymorphic: {10 => "Person", 11 => "InlineAnimal2"}
+      belongs_to :target, polymorphic: {10 => "Food", 13 => "InlineDrink2"}
+      belongs_to :normal_target, polymorphic: true
+    end
+
+    class InlineAnimal2 < ActiveRecord::Base
+      include PolymorphicIntegerType::Extensions
+
+      self.table_name = "animals"
+
+      has_many :source_links, as: :source, class_name: "InlineLink2"
+    end
+
+    class InlineDrink2 < ActiveRecord::Base
+      include PolymorphicIntegerType::Extensions
+
+      self.table_name = "drinks"
+
+      has_many :inline_links2, as: :target
+    end
+
+    let!(:animal) { InlineAnimal2.create!(name: "Lucy") }
+    let!(:drink) { InlineDrink2.create!(name: "Water") }
+    let!(:link) { InlineLink2.create!(source: animal, target: drink, normal_target: drink) }
+
+    let(:source) { animal }
+    let(:target) { drink }
+
+    include_examples "proper source"
+    include_examples "proper target"
+
+    it "pulls mapping from given hash" do
+      expect(link.source_id).to eq(animal.id)
+      expect(link[:source_type]).to eq(11)
+      expect(link.target_id).to eq(drink.id)
+      expect(link[:target_type]).to eq(13)
+    end
+
+    it "doesn't break string type polymorphic associations" do
+      expect(link.normal_target).to eq(drink)
+      expect(link.normal_target_type).to eq("InlineDrink2")
     end
   end
 end

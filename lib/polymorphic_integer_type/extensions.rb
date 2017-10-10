@@ -7,10 +7,11 @@ module PolymorphicIntegerType
         options = scope if scope.kind_of? Hash
         integer_type = options.delete :integer_type
         super
-        if options[:polymorphic] && integer_type
+        if options[:polymorphic] && (integer_type || options[:polymorphic].is_a?(Hash))
           mapping =
-            if integer_type == true
-              PolymorphicIntegerType::Mapping[name]
+            case integer_type
+            when true then PolymorphicIntegerType::Mapping[name]
+            when nil then options[:polymorphic]
             else
               integer_type
             end.dup
@@ -51,29 +52,22 @@ module PolymorphicIntegerType
 
       def remove_type_and_establish_mapping(name, options, scope)
         integer_type = options.delete :integer_type
+        polymorphic_type_mapping = retrieve_polymorphic_type_mapping(
+          polymorphic_type: options[:as],
+          class_name: options[:class_name] || name.to_s.classify
+        )
 
-        if options[:as] && integer_type
+        if options[:as] && (polymorphic_type_mapping || integer_type)
           poly_type = options.delete(:as)
-          class_name = options[:class_name] || name.to_s.classify
-          mapping = begin
-            belongs_to_class = class_name.constantize
-            method_name = "#{poly_type}_type_mapping"
-            if belongs_to_class.respond_to?(method_name)
-              belongs_to_class.public_send(method_name)
-            end
-          rescue NameError => e
-            STDERR.puts "Failed to load belongs_to class: #{e.message}"
-          end
-
-          mapping ||= PolymorphicIntegerType::Mapping[poly_type]
-          if mapping == nil
+          polymorphic_type_mapping ||= PolymorphicIntegerType::Mapping[poly_type]
+          if polymorphic_type_mapping == nil
             raise "Polymorphic type mapping missing for #{poly_type.inspect}"
           end
 
-          klass_mapping = (mapping || {}).key(sti_name)
+          klass_mapping = (polymorphic_type_mapping || {}).key(sti_name)
 
           if klass_mapping == nil
-            raise "Class not found for #{sti_name.inspect} in polymorphic type mapping: #{mapping}"
+            raise "Class not found for #{sti_name.inspect} in polymorphic type mapping: #{polymorphic_type_mapping}"
           end
 
           options[:foreign_key] ||= "#{poly_type}_id"
@@ -86,6 +80,22 @@ module PolymorphicIntegerType
           }
         else
           options[:scope] ||= scope
+        end
+      end
+
+      def retrieve_polymorphic_type_mapping(polymorphic_type:, class_name:)
+        return if polymorphic_type == nil
+
+        belongs_to_class = begin
+          class_name.constantize
+        rescue NameError
+          # Class not found
+        end
+
+        method_name = "#{polymorphic_type}_type_mapping"
+
+        if belongs_to_class && belongs_to_class.respond_to?(method_name)
+          belongs_to_class.public_send(method_name)
         end
       end
 

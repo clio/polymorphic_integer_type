@@ -51,28 +51,29 @@ For Rails 3.2 use version < 2. Version >= 2 has been tested on Rails 4.2 and Rub
 
 ## Usage
 
-Include `PolymorphicIntegerType::Extensions` into each associated model class then set the `integer_type` option on the appropriate association.
-
-For the model where the `belongs_to` is defined, set `integer_type` to hash mapping integers to strings. This hash maps an integer in the database to a Ruby class.
+For the model where the `belongs_to` is defined, include `PolymorphicIntegerType::Extensions` and set the `polymorphic:` option to a hash that maps an integer stored in the database to the name of a Ruby class.
 
 ```ruby
 class Picture < ActiveRecord::Base
   include PolymorphicIntegerType::Extensions
-  belongs_to :imageable, polymorphic: true, integer_type: {1 => "Employee", 2 => "Product"}
+
+  belongs_to :imageable, polymorphic: {1 => "Employee", 2 => "Product"}
 end
 ```
  
- Next, set `integer_type` to true on any related `has_many` or `has_one` associations:
+ Next, include `PolymorphicIntegerType::Extensions` into any of the models that point back to the polymorphic integer type association (e.g., `Picture#imageable`) and add a [polymorphic association using `as:`](http://guides.rubyonrails.org/association_basics.html#polymorphic-associations).
 
 ```ruby
 class Employee < ActiveRecord::Base
   include PolymorphicIntegerType::Extensions
-  has_many :pictures, as: :imageable, integer_type: true
+
+  has_many :pictures, as: :imageable
 end
  
 class Product < ActiveRecord::Base
   include PolymorphicIntegerType::Extensions
-  has_many :pictures, as: :imageable, integer_type: true
+
+  has_many :pictures, as: :imageable
 end
 ```
 

@@ -154,8 +154,8 @@ describe PolymorphicIntegerType do
 
       self.table_name = "links"
 
-      belongs_to :source, polymorphic: true, integer_type: {10 => "Person", 11 => "InlineAnimal"}
-      belongs_to :target, polymorphic: true, integer_type: {10 => "Food", 13 => "InlineDrink"}
+      belongs_to :source, polymorphic: {10 => "Person", 11 => "InlineAnimal"}
+      belongs_to :target, polymorphic: {10 => "Food", 13 => "InlineDrink"}
       belongs_to :normal_target, polymorphic: true
     end
 

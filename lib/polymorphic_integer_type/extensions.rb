@@ -13,7 +13,7 @@ module PolymorphicIntegerType
             when true then PolymorphicIntegerType::Mapping[name]
             when nil then options[:polymorphic]
             else
-              integer_type
+              raise ArgumentError, "Unknown integer_type value: #{integer_type.inspect}"
             end.dup
 
           foreign_type = reflections[name.to_s].foreign_type

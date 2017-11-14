@@ -84,14 +84,9 @@ module PolymorphicIntegerType
       end
 
       def retrieve_polymorphic_type_mapping(polymorphic_type:, class_name:)
-        return if polymorphic_type == nil
+        return if polymorphic_type.nil?
 
-        belongs_to_class = begin
-          class_name.constantize
-        rescue NameError
-          # Class not found
-        end
-
+        belongs_to_class = class_name.safe_constantize
         method_name = "#{polymorphic_type}_type_mapping"
 
         if belongs_to_class && belongs_to_class.respond_to?(method_name)

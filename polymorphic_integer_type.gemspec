@@ -24,5 +24,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "activerecord", "4.2.0"
   spec.add_development_dependency "mysql2", "0.3.16"
   spec.add_development_dependency "byebug"
-
 end

@@ -1,6 +1,7 @@
 # PolymorphicIntegerType
 
 Rails' polymorphic associations are pretty useful. The example they give to set it up looks like:
+
 ```ruby
 class Picture < ActiveRecord::Base
   belongs_to :imageable, polymorphic: true
@@ -16,6 +17,7 @@ end
 ```
 
 With a migration that looks like:
+
 ```ruby
 class CreatePictures < ActiveRecord::Migration
   def change
@@ -49,38 +51,48 @@ For Rails 3.2 use version < 2. Version >= 2 has been tested on Rails 4.2 and Rub
 
 ## Usage
 
-The gem is pretty straightforward to use.
+For the model where the `belongs_to` is defined, include `PolymorphicIntegerType::Extensions` and set the `polymorphic:` option to a hash that maps an integer stored in the database to the name of a Ruby class.
 
-First, include the extensions module and add the `integer_type`  option to the associations that are going to be using this. (That way it will play nicely with polymorphic associations whose type you would rather leave as a string.)
 ```ruby
 class Picture < ActiveRecord::Base
   include PolymorphicIntegerType::Extensions
-  belongs_to :imageable, polymorphic: true, integer_type: true
+
+  belongs_to :imageable, polymorphic: {1 => "Employee", 2 => "Product"}
 end
+```
  
+ Next, include `PolymorphicIntegerType::Extensions` into any of the models that point back to the polymorphic integer type association (e.g., `Picture#imageable`) and add a [polymorphic association using `as:`](http://guides.rubyonrails.org/association_basics.html#polymorphic-associations).
+
+```ruby
 class Employee < ActiveRecord::Base
   include PolymorphicIntegerType::Extensions
-  has_many :pictures, as: :imageable, integer_type: true
+
+  has_many :pictures, as: :imageable
 end
  
 class Product < ActiveRecord::Base
   include PolymorphicIntegerType::Extensions
-  has_many :pictures, as: :imageable, integer_type: true
+
+  has_many :pictures, as: :imageable
 end
 ```
 
-Second, you need to create a mapping for the polymorphic associations. This should be loaded before the models. Putting it in an initializer is good (`config/initializers/polymorphic_type_mapping.rb`)
+### External mappings
+
+You can also store polymorphic type mappings separate from your models. This should be loaded before the models. Putting it in an initializer is one way to do this (e.g., `config/initializers/polymorphic_type_mapping.rb`)
+
 ```ruby
 PolymorphicIntegerType::Mapping.configuration do |config|
-
-  config.add :imageable, {1 => "Employee", 2 => "Product" }  	
-
+  config.add :imageable, {1 => "Employee", 2 => "Product" }
 end 
 ```
 
 Note: The mapping here can start from whatever integer you wish, but I would advise not using 0. The reason being that if you had a new class, for instance `Avatar`, and also wanted to use this polymorphic association but forgot to include it in the mapping, it would effectively get `to_i` called on it and stored in the database. `"Avatar".to_i == 0`, so if your mapping included 0, this would create a weird bug. 
 
+### Migrating an existing association
+
 If you want to convert a polymorphic association that is already a string, you'll need to set up a migration. (Assuming SQL for the time being, but this should be pretty straightforward.)
+
 ```ruby
 class PictureToPolymorphicIntegerType < ActiveRecord::Migration
   
@@ -125,8 +137,18 @@ end
 ```
 
 Lastly, you will need to be careful of any place where you are doing raw SQL queries with the string (`imageable_type = 'Employee'`). They should use the integer instead.
-  
 
+## Setup
+
+You'll need to have git, Ruby, and MySQL. Then get up and running with a few commands:
+
+```bash
+$ git clone ...
+$ bundle install
+$ vim spec/support/database.yml # Update username and password
+$ bin/setup
+$ bundle exec rspec
+```
 
 ## Contributing
 

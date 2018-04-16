@@ -3,7 +3,7 @@ module PolymorphicIntegerType
   module Extensions
     module ClassMethods
 
-      def belongs_to(name, scope = nil, options = {})
+      def belongs_to(name, scope = nil, **options)
         options = scope if scope.kind_of? Hash
         integer_type = options.delete :integer_type
         super
@@ -94,7 +94,7 @@ module PolymorphicIntegerType
         end
       end
 
-      def has_many(name, scope = nil, options = {}, &extension)
+      def has_many(name, scope = nil, **options, &extension)
         if scope.kind_of? Hash
           options = scope
           scope = nil
@@ -104,7 +104,7 @@ module PolymorphicIntegerType
         super(name, options.delete(:scope), options, &extension)
       end
 
-      def has_one(name, scope = nil, options = {})
+      def has_one(name, scope = nil, **options)
         if scope.kind_of? Hash
           options = scope
           scope = nil

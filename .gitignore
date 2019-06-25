@@ -17,3 +17,5 @@ spec/support/active_record.rb
 test/tmp
 test/version_tmp
 tmp
+.byebug_history
+polymorphic_integer_type_test

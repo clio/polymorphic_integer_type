@@ -24,6 +24,17 @@ describe PolymorphicIntegerType do
     end
   end
 
+  context "when querying the associations" do
+    let(:source) { cat }
+    let(:target) { nil }
+    it "properly finds the object with a where" do
+      expect(Link.where(source: source, id: link.id).first).to eql link
+    end
+    it "properly finds the object with a find_by" do
+      expect(Link.find_by(source: source, id: link.id)).to eql link
+    end
+  end
+
   shared_examples "proper source" do
     it "should have the proper id, type and object for the source" do
       expect(link.source_id).to eql source.id
@@ -47,12 +58,12 @@ describe PolymorphicIntegerType do
 
     context "and the link is accessed through the associations" do
       before { link }
-      
+
       it "should have the proper source" do
         expect(source.source_links[0].source).to eql source
       end
     end
-    
+
   end
   context "When a link is given polymorphic record" do
     let(:link) { Link.create(source: source) }
@@ -137,7 +148,7 @@ describe PolymorphicIntegerType do
 
 
   end
-  
+
   context "when the association is an STI table" do
     let(:link) { Link.create(source: source, target: whiskey) }
     let(:source) { Dog.create(name: "Bela", kind: "Dog", owner: owner) }
@@ -147,7 +158,7 @@ describe PolymorphicIntegerType do
       expect(link.source).to eql source
     end
   end
-  
+
   context "when mapping is given inline in the belongs_to model" do
     class InlineLink < ActiveRecord::Base
       include PolymorphicIntegerType::Extensions
@@ -187,7 +198,7 @@ describe PolymorphicIntegerType do
     include_examples "proper target"
 
     it "creates foreign_type mapping method" do
-      expect(Link.source_type_mapping).to eq({0 => "Person", 1 => "Animal"})
+      expect(Link.source_type_mapping).to eq({1 => "Person", 2 => "Animal"})
       expect(InlineLink.source_type_mapping).to eq({10 => "Person", 11 => "InlineAnimal"})
     end
 

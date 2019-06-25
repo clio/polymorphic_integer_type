@@ -1,4 +1,4 @@
-class CreateFoodTable < ActiveRecord::Migration
+class CreateFoodTable < ActiveRecord::Migration[5.2]
 
   def up
     create_table :foods do |t|

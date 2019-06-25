@@ -1,4 +1,4 @@
-class CreateLinkTable < ActiveRecord::Migration
+class CreateLinkTable < ActiveRecord::Migration[5.2]
 
   def up
     create_table :links do |t|

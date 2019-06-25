@@ -1,5 +1,5 @@
 ---
-:adapter: mysql2
+:adapter: sqlite3
 :host: localhost
 :database: polymorphic_integer_type_test
 :username: root

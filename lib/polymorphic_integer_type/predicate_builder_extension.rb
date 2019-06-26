@@ -1,6 +1,6 @@
 module PolymorphicIntegerType
   module PredicateBuilderExtension
-    def self.expand(klass, table, column, value)
+    def expand(klass, table, column, value)
       queries = []
 
       # Find the foreign key when using queries such as:
@@ -33,4 +33,4 @@ module PolymorphicIntegerType
   end
 end
 
-ActiveRecord::PredicateBuilder.prepend(PolymorphicIntegerType::PredicateBuilderExtension)
+ActiveRecord::PredicateBuilder.singleton_class.prepend(PolymorphicIntegerType::PredicateBuilderExtension)

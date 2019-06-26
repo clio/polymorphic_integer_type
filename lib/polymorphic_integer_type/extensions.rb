@@ -12,6 +12,11 @@ module PolymorphicIntegerType
           foreign_type = reflections[name.to_s].foreign_type
           self._polymorphic_foreign_types << foreign_type
 
+          # Required way to dynamically define a class method on the model
+          singleton_class.__send__(:define_method, "#{foreign_type}_mapping") do
+            mapping
+          end
+
           define_method foreign_type do
             t = super()
             mapping[t]

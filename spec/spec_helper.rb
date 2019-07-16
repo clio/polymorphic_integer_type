@@ -13,7 +13,9 @@ RSpec.configure do |config|
   config.before(:suite) do
     database_config = YAML.load(File.open("#{File.dirname(__FILE__)}/support/database.yml"))
     ActiveRecord::Base.establish_connection(database_config)
-    ActiveRecord::MigrationContext.new("#{File.dirname(__FILE__)}/support/migrations").migrate
+    if Gem::Version.new(ActiveRecord::VERSION::STRING) >= Gem::Version.new("5")
+      ActiveRecord::MigrationContext.new("#{File.dirname(__FILE__)}/support/migrations").migrate
+    end
   end
 
   config.around do |example|

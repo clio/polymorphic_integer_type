@@ -24,11 +24,6 @@ module PolymorphicIntegerType
             mapping
           end
 
-          # Required way to dynamically define a class method on the model
-          singleton_class.__send__(:define_method, "#{foreign_type}_mapping") do
-            mapping
-          end
-
           define_method foreign_type do
             t = super()
             mapping[t]

@@ -24,25 +24,31 @@ module PolymorphicIntegerType
             mapping
           end
 
-          define_method foreign_type do
-            t = super()
-            mapping[t]
-          end
-
-          define_method "#{foreign_type}=" do |klass|
-            enum = mapping.key(klass.to_s)
-            if klass.kind_of?(Class) && klass <= ActiveRecord::Base
-              enum ||= mapping.key(klass.base_class.to_s)
-              enum ||= mapping.key(klass.base_class.sti_name)
+          foreign_type_extension = Module.new do
+            define_method foreign_type do
+              t = super()
+              self.class.send("#{foreign_type}_mapping")[t]
             end
-            enum ||= klass if klass != NilClass
-            super(enum)
+
+            define_method "#{foreign_type}=" do |klass|
+              mapping = self.class.send("#{foreign_type}_mapping")
+              enum = mapping.key(klass.to_s)
+              if klass.kind_of?(Class) && klass <= ActiveRecord::Base
+                enum ||= mapping.key(klass.sti_name)
+                enum ||= mapping.key(klass.base_class.to_s)
+                enum ||= mapping.key(klass.base_class.sti_name)
+              end
+              enum ||= klass if klass != NilClass
+              super(enum)
+            end
+
+            define_method "#{name}=" do |record|
+              super(record)
+              send("#{foreign_type}=", record.class)
+            end
           end
 
-          define_method "#{name}=" do |record|
-            super(record)
-            send("#{foreign_type}=", record.class)
-          end
+          include(foreign_type_extension)
 
           validate do
             t = send(foreign_type)

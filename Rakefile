@@ -1,6 +1,18 @@
 require "bundler/gem_tasks"
 require "yaml"
 require "active_record"
+require "byebug"
+
+namespace :test do
+  task :all do
+    Dir.glob("./gemfiles/Gemfile*").each do |gemfile|
+      next if gemfile.end_with?(".lock")
+      puts "Running specs for #{Pathname.new(gemfile).basename}"
+      system("BUNDLE_GEMFILE=#{gemfile} bundle install > /dev/null && BUNDLE_GEMFILE=#{gemfile} bundle exec rspec")
+      puts ""
+    end
+  end
+end
 
 namespace :db do
   database_config = YAML.load(File.open("./spec/support/database.yml"))

@@ -24,7 +24,7 @@ describe PolymorphicIntegerType do
     end
   end
 
-  context "when the source is a class that modifies the sti_name" do
+  context "when the source is a class that modifies the sti_name or polymorphic_name" do
     it "properly sets the source_type to the modified class name" do
       link = Link.new(source: Namespaced::Animal.new)
       expect(link.source_type).to eql "Animal"

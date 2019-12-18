@@ -34,9 +34,15 @@ describe PolymorphicIntegerType do
   context "when querying the associations" do
     let(:source) { cat }
     let(:target) { nil }
+
     it "properly finds the object with a where" do
       expect(Link.where(source: source, id: link.id).first).to eql link
     end
+
+    it "properly finds the object when passing an array of sources" do
+      expect(Link.where(source: [source])).to eq [link]
+    end
+
     it "properly finds the object with a find_by" do
       expect(Link.find_by(source: source, id: link.id)).to eql link
     end

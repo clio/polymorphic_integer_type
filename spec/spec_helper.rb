@@ -9,6 +9,7 @@ require 'support/dog'
 require 'support/person'
 require 'support/food'
 require 'support/drink'
+require 'byebug'
 
 RSpec.configure do |config|
   config.before(:suite) do

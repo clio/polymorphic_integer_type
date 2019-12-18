@@ -14,16 +14,20 @@ module PolymorphicIntegerType
 
     protected
 
-    def polymorphic_value_for(value)
-      table = value.associated_table
+    def polymorphic_value_for(query_value)
+      table = query_value.associated_table
       association = table.send(:association)
       klass = association.active_record
       name = association.name
 
       if klass.respond_to?("#{name}_type_mapping")
-        klass.send("#{name}_type_mapping").key(value.base_class.sti_name)
+        type_mapping = klass.send("#{name}_type_mapping")
+
+        type_mapping.key(query_value.value.class.sti_name) ||
+          type_mapping.key(query_value.base_class.to_s) ||
+          type_mapping.key(query_value.base_class.sti_name)
       else
-        value.base_class.name
+        query_value.base_class.name
       end
     end
 

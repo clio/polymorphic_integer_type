@@ -24,10 +24,18 @@ describe PolymorphicIntegerType do
     end
   end
 
-  context "when the source is a class that modifies the sti_name" do
+  context "when the source is a class that modifies the sti_name or polymorphic_name" do
     it "properly sets the source_type to the modified class name" do
       link = Link.new(source: Namespaced::Animal.new)
       expect(link.source_type).to eql "Animal"
+    end
+
+    it "can read dirty attributes from an associated object" do
+      animal = Namespaced::Animal.create!(name: "Oldie")
+      animal.name = "Newton"
+      link = Link.create!(source: animal)
+
+      expect(link.source.name).to eq("Newton")
     end
   end
 
@@ -109,7 +117,7 @@ describe PolymorphicIntegerType do
 
   end
 
-  context "When using a relation to the links with eagar loading" do
+  context "When using a relation to the links with eager loading" do
     let!(:links){
       [Link.create(source: source, target: kibble),
         Link.create(source: source, target: water)]
@@ -124,7 +132,7 @@ describe PolymorphicIntegerType do
 
   end
 
-  context "When using a through relation to the links with eagar loading" do
+  context "When using a through relation to the links with eager loading" do
     let!(:links){
       [Link.create(source: source, target: kibble),
         Link.create(source: source, target: water)]
@@ -139,7 +147,7 @@ describe PolymorphicIntegerType do
 
   end
 
-  context "When eagar loading the polymorphic association" do
+  context "When eager loading the polymorphic association" do
     let(:link) { Link.create(source_id: source.id, source_type: source.class.to_s) }
     let(:source) { cat }
 
@@ -158,6 +166,7 @@ describe PolymorphicIntegerType do
       l = Link.includes(:source).where(id: link.id).first
       expect(l.source).to eql cat
     end
+
 
 
   end

@@ -14,4 +14,8 @@ if ACTIVE_RECORD_VERSION >= Gem::Version.new("5.0") && ACTIVE_RECORD_VERSION < G
   require "polymorphic_integer_type/activerecord_5_0_0/association_query_handler_extension"
 end
 
+if ACTIVE_RECORD_VERSION < Gem::Version.new("5.2.0")
+  require "polymorphic_integer_type/activerecord_4/belongs_to_polymorphic_association_extension"
+end
+
 module PolymorphicIntegerType; end

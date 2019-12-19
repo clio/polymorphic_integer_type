@@ -1,7 +1,6 @@
 require "bundler/gem_tasks"
 require "yaml"
 require "active_record"
-require "byebug"
 
 namespace :test do
   task :all do

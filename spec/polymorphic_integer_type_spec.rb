@@ -261,7 +261,7 @@ describe PolymorphicIntegerType do
 
       self.table_name = "drinks"
 
-      has_many :inline_links2, as: :target
+      has_many :inline_link2s, as: :target
     end
 
     let!(:animal) { InlineAnimal2.create!(name: "Lucy") }

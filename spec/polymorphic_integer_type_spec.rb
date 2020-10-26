@@ -25,6 +25,25 @@ describe PolymorphicIntegerType do
   end
 
   context "when the source is a class that modifies the sti_name or polymorphic_name" do
+    context "and we leverage the polymorphic_name" do
+      before do
+        allow(PolymorphicIntegerType).to receive(:use_polymorphic_name).and_return(true)
+      end
+
+      it "properly sets the source_type to the modified class name" do
+        link = Link.new(source: Namespaced::Animal.new)
+        expect(link.source_type).to eql "Animal"
+      end
+
+      it "can read dirty attributes from an associated object" do
+        animal = Namespaced::Animal.create!(name: "Oldie")
+        animal.name = "Newton"
+        link = Link.create!(source: animal)
+
+        expect(link.source.name).to eq("Newton")
+      end
+    end
+
     it "properly sets the source_type to the modified class name" do
       link = Link.new(source: Namespaced::Animal.new)
       expect(link.source_type).to eql "Animal"

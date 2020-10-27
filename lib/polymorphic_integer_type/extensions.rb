@@ -46,6 +46,7 @@ module PolymorphicIntegerType
             define_method "#{name}=" do |record|
               super(record)
               send("#{foreign_type}=", record.class)
+              association(name).loaded!
             end
           end
 

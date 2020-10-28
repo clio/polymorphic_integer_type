@@ -34,6 +34,7 @@ module PolymorphicIntegerType
               mapping = self.class.send("#{foreign_type}_mapping")
               enum = mapping.key(klass.to_s)
               if klass.kind_of?(Class) && klass <= ActiveRecord::Base
+                enum ||= mapping.key(klass.polymorphic_name) if klass.respond_to?(:polymorphic_name)
                 enum ||= mapping.key(klass.sti_name)
                 enum ||= mapping.key(klass.base_class.to_s)
                 enum ||= mapping.key(klass.base_class.sti_name)
@@ -45,6 +46,7 @@ module PolymorphicIntegerType
             define_method "#{name}=" do |record|
               super(record)
               send("#{foreign_type}=", record.class)
+              association(name).loaded!
             end
           end
 
@@ -69,14 +71,15 @@ module PolymorphicIntegerType
         if options[:as] && (polymorphic_type_mapping || integer_type)
           poly_type = options.delete(:as)
           polymorphic_type_mapping ||= PolymorphicIntegerType::Mapping[poly_type]
-          if polymorphic_type_mapping == nil
+          if polymorphic_type_mapping.nil?
             raise "Polymorphic type mapping missing for #{poly_type.inspect}"
           end
 
-          klass_mapping = (polymorphic_type_mapping || {}).key(sti_name)
+          klass_mapping = polymorphic_type_mapping.key(polymorphic_name) if respond_to?(:polymorphic_name)
+          klass_mapping ||= polymorphic_type_mapping.key(sti_name)
 
-          if klass_mapping == nil
-            raise "Class not found for #{sti_name.inspect} in polymorphic type mapping: #{polymorphic_type_mapping}"
+          if klass_mapping.nil?
+            raise "Class not found for #{inspect} in polymorphic type mapping: #{polymorphic_type_mapping}"
           end
 
           options[:foreign_key] ||= "#{poly_type}_id"

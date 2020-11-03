@@ -6,6 +6,6 @@ require "polymorphic_integer_type/mapping"
 require "polymorphic_integer_type/type_caster"
 
 require "polymorphic_integer_type/activerecord_5_0_0/polymorphic_array_value_extension"
-require "belongs_to_polymorphic_association_extension"
+require "polymorphic_integer_type/activerecord_5_0_0/belongs_to_polymorphic_association_extension"
 
 module PolymorphicIntegerType; end

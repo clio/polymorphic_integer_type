@@ -15,9 +15,9 @@ module PolymorphicIntegerType
       default_hash = Hash.new { |hsh, key| hsh[key] = [] }
 
       values.each_with_object(default_hash) do |value, hash|
+        klass = klass(value)
         if association.active_record.respond_to?("#{name}_type_mapping")
           mapping = association.active_record.send("#{name}_type_mapping")
-          klass = klass(value)
           key ||= mapping.key(klass.polymorphic_name)
           key ||= mapping.key(klass.sti_name)
           key ||= mapping.key(klass.base_class.to_s)

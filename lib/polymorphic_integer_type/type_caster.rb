@@ -15,16 +15,18 @@ module PolymorphicIntegerType
       mapped_value(value)
     end
 
-    def mapped_value(value)
-      if value.is_a?(Integer)
-        return mapping[value]
+    def mapped_value(original_value)
+      if original_value.is_a?(Integer)
+        return mapping[original_value]
       end
 
-      if value.kind_of? String
-        value = klass.send(:compute_type, value)
+      if original_value.kind_of? String
+        value = klass.send(:compute_type, original_value)
+      else
+        value = original_value
       end
 
-      return value.sti_name if mapping.value?(value.sti_name)
+      return value.to_s if mapping.value?(value.to_s)
 
       if value.kind_of?(Class) && value <= ActiveRecord::Base
         return value.polymorphic_name if value.respond_to?(:polymorphic_name) && mapping.value?(value.polymorphic_name)
@@ -33,7 +35,7 @@ module PolymorphicIntegerType
         return value.base_class.sti_name if mapping.value?(value.base_class.sti_name)
       end
 
-      value
+      original_value
     end
 
     def serialize(value)

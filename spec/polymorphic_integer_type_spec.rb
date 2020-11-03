@@ -245,9 +245,9 @@ describe PolymorphicIntegerType do
 
     it "pulls mapping from given hash" do
       expect(link.source_id).to eq(animal.id)
-      expect(link[:source_type]).to eq(11)
+      expect(link[:source_type]).to eq("InlineAnimal")
       expect(link.target_id).to eq(drink.id)
-      expect(link[:target_type]).to eq(13)
+      expect(link[:target_type]).to eq("InlineDrink")
     end
 
     it "doesn't break string type polymorphic associations" do
@@ -295,9 +295,9 @@ describe PolymorphicIntegerType do
 
     it "pulls mapping from given hash" do
       expect(link.source_id).to eq(animal.id)
-      expect(link[:source_type]).to eq(11)
+      expect(link[:source_type]).to eq("InlineAnimal2")
       expect(link.target_id).to eq(drink.id)
-      expect(link[:target_type]).to eq(13)
+      expect(link[:target_type]).to eq("InlineDrink2")
     end
 
     it "doesn't break string type polymorphic associations" do

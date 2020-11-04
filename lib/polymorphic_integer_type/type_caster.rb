@@ -44,7 +44,7 @@ module PolymorphicIntegerType
         value
       else
         val = mapping.key(mapped_value(value))
-        val
+        val && val.to_i
       end
     end
 

@@ -13,12 +13,11 @@ module PolymorphicIntegerType
       association = @associated_table.send(:association)
       name = association.name
       default_hash = Hash.new { |hsh, key| hsh[key] = [] }
-
       values.each_with_object(default_hash) do |value, hash|
-        klass = klass(value)
+        klass = value.class
         if association.active_record.respond_to?("#{name}_type_mapping")
           mapping = association.active_record.send("#{name}_type_mapping")
-          key ||= mapping.key(klass.polymorphic_name)
+          key ||= mapping.key(klass.polymorphic_name) if klass.respond_to?(:polymorphic_name)
           key ||= mapping.key(klass.sti_name)
           key ||= mapping.key(klass.base_class.to_s)
           key ||= mapping.key(klass.base_class.sti_name)

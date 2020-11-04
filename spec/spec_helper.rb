@@ -5,10 +5,12 @@ require 'support/configuration'
 require 'support/link'
 require 'support/animal'
 require 'support/namespaced_animal'
+require 'support/namespaced_plant'
 require 'support/dog'
 require 'support/person'
 require 'support/food'
 require 'support/drink'
+require 'support/namespaced_activity'
 require 'byebug'
 
 RSpec.configure do |config|

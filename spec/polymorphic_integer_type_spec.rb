@@ -73,6 +73,15 @@ describe PolymorphicIntegerType do
     it "properly finds the object with a find_by" do
       expect(Link.find_by(source: source, id: link.id)).to eql link
     end
+
+    context "when source and target are namedpaced without modifying polymorphic_name" do
+      it "properly finds the object" do
+        plant = Namespaced::Plant.create(name: "Mighty", kind: "Oak", owner: owner)
+        activity = Namespaced::Activity.create(name: "swaying")
+        link = Link.create(source: plant, target: activity)
+        expect(Link.where(source: plant, id: link.id).first).to eql link
+      end
+    end
   end
 
   shared_examples "proper source" do
@@ -103,7 +112,6 @@ describe PolymorphicIntegerType do
         expect(source.source_links[0].source).to eql source
       end
     end
-
   end
   context "When a link is given polymorphic record" do
     let(:link) { Link.create(source: source) }
@@ -116,9 +124,7 @@ describe PolymorphicIntegerType do
 
       include_examples "proper source"
       include_examples "proper target"
-
     end
-
   end
 
   context "When a link is given polymorphic id and type" do
@@ -131,9 +137,7 @@ describe PolymorphicIntegerType do
       before { link.update_attributes(target_id: target.id, target_type: target.class.to_s) }
       include_examples "proper source"
       include_examples "proper target"
-
     end
-
   end
 
   context "When using a relation to the links with eager loading" do
@@ -146,9 +150,7 @@ describe PolymorphicIntegerType do
     it "should be able to return the links and the targets" do
       expect(cat.source_links).to match_array links
       expect(cat.source_links.includes(:target).collect(&:target)).to match_array [water, kibble]
-
     end
-
   end
 
   context "When using a through relation to the links with eager loading" do
@@ -161,9 +163,7 @@ describe PolymorphicIntegerType do
     it "should be able to return the links and the targets" do
       expect(owner.pet_source_links).to match_array links
       expect(owner.pet_source_links.includes(:target).collect(&:target)).to match_array [water, kibble]
-
     end
-
   end
 
   context "When eager loading the polymorphic association" do
@@ -178,16 +178,12 @@ describe PolymorphicIntegerType do
         expect(links.first.source).to eql cat
         expect(links.last.source).to eql dog
       end
-
     end
 
     it "should be able to preload the association" do
       l = Link.includes(:source).where(id: link.id).first
       expect(l.source).to eql cat
     end
-
-
-
   end
 
   context "when the association is an STI table" do
@@ -239,7 +235,7 @@ describe PolymorphicIntegerType do
     include_examples "proper target"
 
     it "creates foreign_type mapping method" do
-      expect(Link.source_type_mapping).to eq({1 => "Person", 2 => "Animal"})
+      expect(Link.source_type_mapping).to eq({1 => "Person", 2 => "Animal", 3 => "Plant"})
       expect(InlineLink.source_type_mapping).to eq({10 => "Person", 11 => "InlineAnimal"})
     end
 

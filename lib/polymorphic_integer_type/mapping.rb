@@ -15,6 +15,6 @@ module PolymorphicIntegerType
       @@mapping[as] || {}
     end
 
+    singleton_class.send(:alias_method, :[]=, :add)
   end
-
 end

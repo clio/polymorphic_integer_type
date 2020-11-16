@@ -6,11 +6,11 @@ Rails' polymorphic associations are pretty useful. The example they give to set 
 class Picture < ActiveRecord::Base
   belongs_to :imageable, polymorphic: true
 end
- 
+
 class Employee < ActiveRecord::Base
   has_many :pictures, as: :imageable
 end
- 
+
 class Product < ActiveRecord::Base
   has_many :pictures, as: :imageable
 end
@@ -31,7 +31,7 @@ class CreatePictures < ActiveRecord::Migration
 end
 ```
 
-The problem with this approach is that `imageable_type` is a string (and by default it is 255 characters). This is a little ridiculous. For comparison, if we had a state machine with X states, would we describe the states with strings `"State1", "State2", etc` or would we just enumerate the state column and make it an integer? This gem will allow us to use an integer for the `imageable_type` column. 
+The problem with this approach is that `imageable_type` is a string (and by default it is 255 characters). This is a little ridiculous. For comparison, if we had a state machine with X states, would we describe the states with strings `"State1", "State2", etc` or would we just enumerate the state column and make it an integer? This gem will allow us to use an integer for the `imageable_type` column.
 
 ## Installation
 
@@ -60,7 +60,7 @@ class Picture < ActiveRecord::Base
   belongs_to :imageable, polymorphic: {1 => "Employee", 2 => "Product"}
 end
 ```
- 
+
  Next, include `PolymorphicIntegerType::Extensions` into any of the models that point back to the polymorphic integer type association (e.g., `Picture#imageable`) and add a [polymorphic association using `as:`](http://guides.rubyonrails.org/association_basics.html#polymorphic-associations).
 
 ```ruby
@@ -69,7 +69,7 @@ class Employee < ActiveRecord::Base
 
   has_many :pictures, as: :imageable
 end
- 
+
 class Product < ActiveRecord::Base
   include PolymorphicIntegerType::Extensions
 
@@ -84,10 +84,10 @@ You can also store polymorphic type mappings separate from your models. This sho
 ```ruby
 PolymorphicIntegerType::Mapping.configuration do |config|
   config.add :imageable, {1 => "Employee", 2 => "Product" }
-end 
+end
 ```
 
-Note: The mapping here can start from whatever integer you wish, but I would advise not using 0. The reason being that if you had a new class, for instance `Avatar`, and also wanted to use this polymorphic association but forgot to include it in the mapping, it would effectively get `to_i` called on it and stored in the database. `"Avatar".to_i == 0`, so if your mapping included 0, this would create a weird bug. 
+Note: The mapping here can start from whatever integer you wish, but I would advise not using 0. The reason being that if you had a new class, for instance `Avatar`, and also wanted to use this polymorphic association but forgot to include it in the mapping, it would effectively get `to_i` called on it and stored in the database. `"Avatar".to_i == 0`, so if your mapping included 0, this would create a weird bug.
 
 ### Migrating an existing association
 
@@ -95,14 +95,14 @@ If you want to convert a polymorphic association that is already a string, you'l
 
 ```ruby
 class PictureToPolymorphicIntegerType < ActiveRecord::Migration
-  
+
   def up
     change_table :pictures do |t|
       t.integer :new_imageable_type
     end
 
     execute <<-SQL
-      UPDATE reminders
+      UPDATE picture
       SET new_imageable_type = CASE imageable_type
                                  WHEN 'Employee' THEN 1
                                  WHEN 'Product' THEN 2

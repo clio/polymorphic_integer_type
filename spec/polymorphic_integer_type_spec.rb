@@ -34,7 +34,6 @@ describe PolymorphicIntegerType do
 
           link = Namespaced::Plant.create(name: "Oak").source_links.new
           expect(link.source_type).to eq("Namespaced::Plant")
-          allow(Link).to receive(:source_type_mapping).and_return({1 => "Person", 2 => "Animal", 3 => "Plant"})
         end
 
         it "sets the target_type" do

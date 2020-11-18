@@ -12,6 +12,7 @@ require 'support/food'
 require 'support/drink'
 require 'support/namespaced_activity'
 require 'byebug'
+require 'pry'
 
 RSpec.configure do |config|
   config.before(:suite) do

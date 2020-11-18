@@ -14,6 +14,50 @@ describe PolymorphicIntegerType do
 
   let(:link) { Link.create(source: source, target: target) }
 
+
+  context "when creating associations" do
+    it "sets the source_type" do
+      link = dog.source_links.new
+      expect(link.source_type).to eq("Animal")
+    end
+
+    it "sets the target_type" do
+      link = kibble.target_links.new
+      expect(link.target_type).to eq("Food")
+    end
+
+    context "when models are namespaced" do
+      context "and mappings include namespaces" do
+        it "sets the source_type" do
+          allow(Link).to receive(:source_type_mapping).and_return({3 => "Namespaced::Plant"})
+          allow(Link).to receive(:source_type_mapping2).and_return({3 => "Namespaced::Plant"})
+
+          link = Namespaced::Plant.create(name: "Oak").source_links.new
+          expect(link.source_type).to eq("Namespaced::Plant")
+        end
+
+        it "sets the target_type" do
+          allow(Link).to receive(:target_type_mapping).and_return({3 => "Namespaced::Activity"})
+          link = Namespaced::Activity.create(name: "swaying").target_links.new
+          expect(link.target_type).to eq("Namespaced::Activity")
+        end
+      end
+
+      context "and mappings don't include namespaces" do
+        it "sets the source type" do
+          Link.source_type_mapping
+          link = Namespaced::Plant.create(name: "Oak").source_links.new
+          expect(link.source_type).to eq("Plant")
+        end
+
+        it "sets the target type" do
+          link = Namespaced::Activity.create(name:"swaying").target_links.new
+          expect(link.target_type).to eq("Activity")
+        end
+      end
+    end
+  end
+
   context "when the source is nil" do
     let(:source) { nil }
     let(:target) { nil }
@@ -72,15 +116,6 @@ describe PolymorphicIntegerType do
 
     it "properly finds the object with a find_by" do
       expect(Link.find_by(source: source, id: link.id)).to eql link
-    end
-
-    context "when source and target are namedpaced without modifying polymorphic_name" do
-      it "properly finds the object" do
-        plant = Namespaced::Plant.create(name: "Mighty", kind: "Oak", owner: owner)
-        activity = Namespaced::Activity.create(name: "swaying")
-        link = Link.create(source: plant, target: activity)
-        expect(Link.where(source: plant, id: link.id).first).to eql link
-      end
     end
   end
 

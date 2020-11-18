@@ -6,6 +6,6 @@ module Namespaced
     self.table_name = "plants"
 
     belongs_to :owner, class_name: "Person"
-    has_many :source_links, as: :source, integer_type: true, class_name: "Link"
+    has_many :source_links, as: :source, inverse_of: :source, integer_type: true, class_name: "Link"
   end
 end

@@ -1,5 +1,5 @@
 module Namespaced
-  class Activity< ActiveRecord::Base
+  class Activity < ActiveRecord::Base
     include PolymorphicIntegerType::Extensions
 
     self.store_full_sti_class = false

@@ -3,9 +3,7 @@ module ActiveRecord
     class BelongsToPolymorphicAssociation < BelongsToAssociation
       private def replace_keys(record)
         super
-        klass = record.nil? ? record.class : record.class.base_class
-
-        owner[reflection.foreign_type] = klass
+        owner[reflection.foreign_type] = record&.class&.base_class
       end
     end
   end

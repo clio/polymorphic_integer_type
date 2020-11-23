@@ -117,6 +117,15 @@ describe PolymorphicIntegerType do
     it "properly finds the object with a find_by" do
       expect(Link.find_by(source: source, id: link.id)).to eql link
     end
+
+    context "when source and target are namespaced without modifying polymorphic_name" do
+      it "properly finds the object" do
+        plant = Namespaced::Plant.create(name: "Mighty", kind: "Oak", owner: owner)
+        activity = Namespaced::Activity.create(name: "swaying")
+        link = Link.create(source: plant, target: activity)
+        expect(Link.where(source: plant, id: link.id).first).to eql link
+      end
+    end
   end
 
   shared_examples "proper source" do

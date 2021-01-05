@@ -1,0 +1,73 @@
+GIT
+  remote: https://github.com/rails/rails.git
+  revision: 6fb3884ca9dcc08765dc8b7852d8d139b885ca03
+  branch: 6-1-stable
+  specs:
+    activemodel (6.1.0)
+      activesupport (= 6.1.0)
+    activerecord (6.1.0)
+      activemodel (= 6.1.0)
+      activesupport (= 6.1.0)
+    activesupport (6.1.0)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 1.6, < 2)
+      minitest (>= 5.1)
+      tzinfo (~> 2.0)
+      zeitwerk (~> 2.3)
+
+PATH
+  remote: ..
+  specs:
+    polymorphic_integer_type (2.3.1)
+      activerecord
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    byebug (11.1.3)
+    coderay (1.1.3)
+    concurrent-ruby (1.1.7)
+    diff-lcs (1.4.4)
+    i18n (1.8.7)
+      concurrent-ruby (~> 1.0)
+    method_source (1.0.0)
+    minitest (5.14.2)
+    pry (0.13.1)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
+    pry-byebug (3.9.0)
+      byebug (~> 11.0)
+      pry (~> 0.13.0)
+    rake (13.0.3)
+    rspec (3.10.0)
+      rspec-core (~> 3.10.0)
+      rspec-expectations (~> 3.10.0)
+      rspec-mocks (~> 3.10.0)
+    rspec-core (3.10.1)
+      rspec-support (~> 3.10.0)
+    rspec-expectations (3.10.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.10.0)
+    rspec-mocks (3.10.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.10.0)
+    rspec-support (3.10.1)
+    sqlite3 (1.4.2)
+    tzinfo (2.0.4)
+      concurrent-ruby (~> 1.0)
+    zeitwerk (2.4.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  activerecord!
+  bundler
+  polymorphic_integer_type!
+  pry-byebug
+  rake
+  rspec
+  sqlite3
+
+BUNDLED WITH
+   2.1.4

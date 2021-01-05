@@ -164,7 +164,7 @@ describe PolymorphicIntegerType do
 
     context "and when it already has a polymorphic record" do
       let(:target) { kibble }
-      before { link.update_attributes(target: target) }
+      before { link.update(target: target) }
 
       include_examples "proper source"
       include_examples "proper target"
@@ -178,7 +178,7 @@ describe PolymorphicIntegerType do
 
     context "and when it already has a polymorphic id and type" do
       let(:target) { kibble }
-      before { link.update_attributes(target_id: target.id, target_type: target.class.to_s) }
+      before { link.update(target_id: target.id, target_type: target.class.to_s) }
       include_examples "proper source"
       include_examples "proper target"
     end

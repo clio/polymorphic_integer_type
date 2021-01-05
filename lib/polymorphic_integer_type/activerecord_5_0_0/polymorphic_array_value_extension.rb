@@ -10,7 +10,8 @@ module PolymorphicIntegerType
     # end
 
     def type_to_ids_mapping
-      association = @associated_table.send(:association)
+      association_method = Gem::Version.new(ActiveRecord::VERSION::STRING) >= Gem::Version.new("6.1.0") ? :reflection : :association
+      association = @associated_table.send(association_method)
       name = association.name
       default_hash = Hash.new { |hsh, key| hsh[key] = [] }
       values.each_with_object(default_hash) do |value, hash|

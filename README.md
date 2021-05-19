@@ -47,8 +47,6 @@ Or install it yourself as:
 
     $ gem install polymorphic_integer_type
 
-For Rails 3.2 use version < 2. Version >= 2 has been tested on Rails 4.2 and Ruby 2.1
-
 ## Usage
 
 For the model where the `belongs_to` is defined, include `PolymorphicIntegerType::Extensions` and set the `polymorphic:` option to a hash that maps an integer stored in the database to the name of a Ruby class.

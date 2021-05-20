@@ -1,4 +1,4 @@
-class CreateAnimalTable < ActiveRecord::Migration[5.2]
+class CreateAnimalTable < ActiveRecord::Migration[5.0]
 
   def up
     create_table :animals do |t|

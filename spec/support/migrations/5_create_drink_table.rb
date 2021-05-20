@@ -1,4 +1,4 @@
-class CreateDrinkTable < ActiveRecord::Migration[5.2]
+class CreateDrinkTable < ActiveRecord::Migration[5.0]
 
   def up
     create_table :drinks do |t|

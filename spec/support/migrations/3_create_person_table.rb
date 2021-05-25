@@ -1,4 +1,4 @@
-class CreatePersonTable < ActiveRecord::Migration[5.2]
+class CreatePersonTable < ActiveRecord::Migration[5.0]
 
   def up
     create_table :people do |t|

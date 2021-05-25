@@ -17,14 +17,21 @@ require 'pry'
 RSpec.configure do |config|
   config.before(:suite) do
     database_config = YAML.load(File.open("#{File.dirname(__FILE__)}/support/database.yml"))
+    migrations_path = "#{File.dirname(__FILE__)}/support/migrations"
+    active_record_version = Gem::Version.new(ActiveRecord::VERSION::STRING)
+
     ActiveRecord::Base.establish_connection(database_config)
 
-    if Gem::Version.new(ActiveRecord::VERSION::STRING) == Gem::Version.new("5.2.0")
-      ActiveRecord::MigrationContext.new("#{File.dirname(__FILE__)}/support/migrations").migrate      
+    if active_record_version < Gem::Version.new("5.2")
+      ActiveRecord::Migrator.migrate(migrations_path)      
+    end
+
+    if active_record_version >= Gem::Version.new("5.2") && active_record_version < Gem::Version.new("6.0")
+      ActiveRecord::MigrationContext.new(migrations_path).migrate      
     end
     
-    if Gem::Version.new(ActiveRecord::VERSION::STRING) >= Gem::Version.new("6.0")
-      ActiveRecord::MigrationContext.new("#{File.dirname(__FILE__)}/support/migrations", ActiveRecord::SchemaMigration).migrate      
+    if active_record_version >= Gem::Version.new("6.0")
+      ActiveRecord::MigrationContext.new(migrations_path, ActiveRecord::SchemaMigration).migrate      
     end
   end
 

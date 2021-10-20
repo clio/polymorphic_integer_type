@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["kyle@goclio.com"]
   spec.description   = %q{Allows the *_type field in the DB to be an integer rather than a string}
   spec.summary       = %q{Use integers rather than strings for the _type field}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/clio/polymorphic_integer_type"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activerecord", "< 6.1"
+  spec.add_dependency "activerecord", "< 7"
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"

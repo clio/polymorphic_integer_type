@@ -17,6 +17,7 @@ jobs:
           - Gemfile.rails-5.1-stable
           - Gemfile.rails-5.2-stable
           - Gemfile.rails-6.0-stable
+          - Gemfile.rails-6.1-stable
     env:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}
     steps:

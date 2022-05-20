@@ -29,7 +29,7 @@ module PolymorphicIntegerType
 
           hash[key] << convert_to_id(value)
         else
-          hash[klass.polymorphic_name] << convert_to_id(value)
+          hash[klass(value)&.polymorphic_name] << convert_to_id(value)
         end
       end
     end

@@ -1,0 +1,46 @@
+version: 2.1
+
+jobs:
+  build-and-test:
+    docker:
+      - image: &docker_image cimg/ruby:2.7
+    steps:
+      - checkout
+      - run:
+          command: gem install bundler -v 2.1.4
+          name: Install bundler
+      - run:
+          command: bundle install --jobs 4 --retry 3
+          name: Install gems
+      - ruby/rspec-test
+  publish:
+    docker:
+      - image: *docker_image
+    steps:
+      - checkout
+      - run:
+          command: |
+            gem build polymorphic_integer_type.gemspec
+            curl -F package=@$(find . -name polymorphic_integer_type-*.gem') https://$GEMFURY_PUSH_TOKEN@push.fury.io/oneflare
+          name: Push to Gemfury
+
+orbs:
+  ruby: circleci/ruby@2.0.0
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - build-and-test:
+          filters:  # required since `deploy` has tag filters AND requires `build`
+            tags:
+              only: /^v.*/
+      - publish:
+          context: gemfury
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+          requires:
+            - "build-and-test"

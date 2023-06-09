@@ -87,7 +87,7 @@ module PolymorphicIntegerType
         end
 
         remove_type_and_establish_mapping(name, options, scope)
-        super(name, options.delete(:scope), options, &extension)
+        super(name, options.delete(:scope), **options, &extension)
       end
 
       def has_one(name, scope = nil, **options)
@@ -97,7 +97,7 @@ module PolymorphicIntegerType
         end
 
         remove_type_and_establish_mapping(name, options, scope)
-        super(name, options.delete(:scope), options)
+        super(name, options.delete(:scope), **options)
       end
 
 

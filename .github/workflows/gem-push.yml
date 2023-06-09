@@ -16,7 +16,7 @@ jobs:
     - name: Set up Ruby 3.0
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.0.x
+        ruby-version: 3.0
 
     - name: Publish to RubyGems
       env:

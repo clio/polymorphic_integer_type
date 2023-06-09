@@ -14,19 +14,18 @@ jobs:
       fail-fast: false
       matrix:
         gemfile:
-          - Gemfile.rails-5.0-stable
-          - Gemfile.rails-5.1-stable
           - Gemfile.rails-5.2-stable
           - Gemfile.rails-6.0-stable
           - Gemfile.rails-6.1-stable
+          - Gemfile.rails-7.0-stable
     env:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "2.6"
+          ruby-version: ["2.7", "3.0", "3.1"]
       - name: Install dependencies
         run: bundle install
       - name: Run tests

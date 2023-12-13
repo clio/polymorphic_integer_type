@@ -2,6 +2,10 @@ module PolymorphicIntegerType
 
   module Extensions
     module ClassMethods
+      ActiveRecord::Reflection::HasManyReflection.attr_accessor(:foreign_integer_type)
+      ActiveRecord::Reflection::HasManyReflection.attr_accessor(:integer_type)
+      ActiveRecord::Reflection::HasOneReflection.attr_accessor(:foreign_integer_type)
+      ActiveRecord::Reflection::HasOneReflection.attr_accessor(:integer_type)
 
       def belongs_to(name, scope = nil, **options)
         options = scope if scope.kind_of? Hash
@@ -58,16 +62,16 @@ module PolymorphicIntegerType
 
           options[:foreign_key] ||= "#{poly_type}_id"
           foreign_type = options.delete(:foreign_type) || "#{poly_type}_type"
-          options[:foreign_integer_type] = foreign_type
-          options[:integer_type] = klass_mapping.to_i
 
           options[:scope] ||= -> {
             condition = where(foreign_type => klass_mapping.to_i)
             condition = instance_exec(&scope).merge(condition) if scope.is_a?(Proc)
             condition
           }
+          return foreign_type, klass_mapping.to_i
         else
           options[:scope] ||= scope
+          return nil, nil
         end
       end
 
@@ -88,9 +92,9 @@ module PolymorphicIntegerType
           scope = nil
         end
 
-        remove_type_and_establish_mapping(name, options, scope)
-        super(name, options.delete(:scope), **options.except(:foreign_integer_type, :integer_type), &extension).tap do |_|
-          remove_integer_type_and_set_attributes_and_extension(options, ActiveRecord::Reflection::HasManyReflection, reflections[name.to_s])
+        integer_type_values = remove_type_and_establish_mapping(name, options, scope)
+        super(name, options.delete(:scope), **options, &extension).tap do
+          remove_integer_type_and_set_attributes_and_extension(integer_type_values, reflections[name.to_s])
         end
       end
 
@@ -100,27 +104,25 @@ module PolymorphicIntegerType
           scope = nil
         end
 
-        remove_type_and_establish_mapping(name, options, scope)
-        super(name, options.delete(:scope), **options.except(:foreign_integer_type, :integer_type)).tap do |_|
-          remove_integer_type_and_set_attributes_and_extension(options, ActiveRecord::Reflection::HasOneReflection, reflections[name.to_s])
+        integer_type_values = remove_type_and_establish_mapping(name, options, scope)
+        super(name, options.delete(:scope), **options).tap do
+          remove_integer_type_and_set_attributes_and_extension(integer_type_values, reflections[name.to_s])
         end
       end
 
-      def remove_integer_type_and_set_attributes_and_extension(options, klass, reflection)
-        foreign_integer_type = options.delete :foreign_integer_type
-        integer_type = options.delete :integer_type
+      def remove_integer_type_and_set_attributes_and_extension(integer_type_values, reflection)
+        foreign_integer_type = integer_type_values[0]
+        integer_type = integer_type_values[1]
         is_polymorphic_integer = foreign_integer_type && integer_type
 
         if is_polymorphic_integer
-          klass.attr_accessor(:foreign_integer_type)
-          klass.attr_accessor(:integer_type)
           reflection.foreign_integer_type = foreign_integer_type
           reflection.integer_type = integer_type
 
           if Gem::Version.new(ActiveRecord::VERSION::STRING) < Gem::Version.new("6.1")
-            ActiveRecord::Associations::Association.prepend(ActiveRecord::Associations::PolymorphicForeignAssociationExtension)
+            ActiveRecord::Associations::Association.prepend(PolymorphicIntegerType::PolymorphicForeignAssociationExtension)
           else
-            ActiveRecord::Associations::ForeignAssociation.prepend(ActiveRecord::Associations::PolymorphicForeignAssociationExtension)
+            ActiveRecord::Associations::ForeignAssociation.prepend(PolymorphicIntegerType::PolymorphicForeignAssociationExtension)
           end
         end
       end

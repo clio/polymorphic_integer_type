@@ -27,7 +27,7 @@ describe PolymorphicIntegerType do
     end
 
     context "from HasManyReflection" do
-      it "sets the source properly from HasManyReflection" do
+      it "sets the source properly HasManyReflection" do
         link_1 = Link.create()
         link_2 = Link.create()
         dog.source_links = [link_1, link_2]
@@ -39,7 +39,7 @@ describe PolymorphicIntegerType do
     end
 
     context "from HasOneReflection" do
-      it "sets the source properly from HasManyReflection" do
+      it "sets the source properly HasOneReflection" do
         link = Link.create()
         dog.source_link = link
 

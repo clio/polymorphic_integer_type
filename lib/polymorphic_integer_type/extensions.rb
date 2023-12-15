@@ -2,6 +2,10 @@ module PolymorphicIntegerType
 
   module Extensions
     module ClassMethods
+      ActiveRecord::Reflection::HasManyReflection.attr_accessor(:foreign_integer_type)
+      ActiveRecord::Reflection::HasManyReflection.attr_accessor(:integer_type)
+      ActiveRecord::Reflection::HasOneReflection.attr_accessor(:foreign_integer_type)
+      ActiveRecord::Reflection::HasOneReflection.attr_accessor(:integer_type)
 
       def belongs_to(name, scope = nil, **options)
         options = scope if scope.kind_of? Hash
@@ -64,8 +68,10 @@ module PolymorphicIntegerType
             condition = instance_exec(&scope).merge(condition) if scope.is_a?(Proc)
             condition
           }
+          return foreign_type, klass_mapping.to_i
         else
           options[:scope] ||= scope
+          return nil, nil
         end
       end
 
@@ -86,8 +92,10 @@ module PolymorphicIntegerType
           scope = nil
         end
 
-        remove_type_and_establish_mapping(name, options, scope)
-        super(name, options.delete(:scope), **options, &extension)
+        integer_type_values = remove_type_and_establish_mapping(name, options, scope)
+        super(name, options.delete(:scope), **options, &extension).tap do
+          remove_integer_type_and_set_attributes_and_extension(integer_type_values, reflections[name.to_s])
+        end
       end
 
       def has_one(name, scope = nil, **options)
@@ -96,8 +104,27 @@ module PolymorphicIntegerType
           scope = nil
         end
 
-        remove_type_and_establish_mapping(name, options, scope)
-        super(name, options.delete(:scope), **options)
+        integer_type_values = remove_type_and_establish_mapping(name, options, scope)
+        super(name, options.delete(:scope), **options).tap do
+          remove_integer_type_and_set_attributes_and_extension(integer_type_values, reflections[name.to_s])
+        end
+      end
+
+      def remove_integer_type_and_set_attributes_and_extension(integer_type_values, reflection)
+        foreign_integer_type = integer_type_values[0]
+        integer_type = integer_type_values[1]
+        is_polymorphic_integer = foreign_integer_type && integer_type
+
+        if is_polymorphic_integer
+          reflection.foreign_integer_type = foreign_integer_type
+          reflection.integer_type = integer_type
+
+          if Gem::Version.new(ActiveRecord::VERSION::STRING) < Gem::Version.new("6.1")
+            ActiveRecord::Associations::Association.prepend(PolymorphicIntegerType::PolymorphicForeignAssociationExtension)
+          else
+            ActiveRecord::Associations::ForeignAssociation.prepend(PolymorphicIntegerType::PolymorphicForeignAssociationExtension)
+          end
+        end
       end
 
 

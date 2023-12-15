@@ -20,3 +20,4 @@ tmp
 .byebug_history
 polymorphic_integer_type_test
 gemfiles/*.lock
+.idea/

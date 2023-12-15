@@ -26,6 +26,28 @@ describe PolymorphicIntegerType do
       expect(link.target_type).to eq("Food")
     end
 
+    context "from HasManyReflection" do
+      it "sets the source properly HasManyReflection" do
+        link_1 = Link.create()
+        link_2 = Link.create()
+        dog.source_links = [link_1, link_2]
+        expect(link_1.source_type).to eq("Animal")
+        expect(link_1.source_id).to eq(dog.id)
+        expect(link_2.source_type).to eq("Animal")
+        expect(link_1.source_id).to eq(dog.id)
+      end
+    end
+
+    context "from HasOneReflection" do
+      it "sets the source properly HasOneReflection" do
+        link = Link.create()
+        dog.source_link = link
+
+        expect(link.source_type).to eq("Animal")
+        expect(link.source_id).to eq(dog.id)
+      end
+    end
+
     context "when models are namespaced" do
       context "and mappings include namespaces" do
         it "sets the source_type" do
@@ -338,6 +360,10 @@ describe PolymorphicIntegerType do
       expect(link[:source_type]).to eq(11)
       expect(link.target_id).to eq(drink.id)
       expect(link[:target_type]).to eq(13)
+    end
+
+    it "pulls mapping from given hash" do
+      animal.source_links.new
     end
 
     it "doesn't break string type polymorphic associations" do

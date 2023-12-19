@@ -371,4 +371,13 @@ describe PolymorphicIntegerType do
       expect(link.normal_target_type).to eq("InlineDrink2")
     end
   end
+
+  context "when using other reflection" do
+    it "owner able to association ActiveRecord::Reflection::ThroughReflection successfully" do
+      profile_history = ProfileHistory.new
+      owner.profile_histories << profile_history
+
+      expect(owner.profile_histories).to eq([profile_history])
+    end
+  end
 end

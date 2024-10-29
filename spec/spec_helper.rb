@@ -23,17 +23,13 @@ RSpec.configure do |config|
     active_record_version = Gem::Version.new(ActiveRecord::VERSION::STRING)
 
     ActiveRecord::Base.establish_connection(database_config)
-
-    if active_record_version < Gem::Version.new("5.2")
-      ActiveRecord::Migrator.migrate(migrations_path)      
-    end
-
-    if active_record_version >= Gem::Version.new("5.2") && active_record_version < Gem::Version.new("6.0")
-      ActiveRecord::MigrationContext.new(migrations_path).migrate      
-    end
     
-    if active_record_version >= Gem::Version.new("6.0")
+    if active_record_version >= Gem::Version.new("6.1") && active_record_version < Gem::Version.new("7.0")
       ActiveRecord::MigrationContext.new(migrations_path, ActiveRecord::SchemaMigration).migrate      
+    end
+
+    if active_record_version >= Gem::Version.new("7.0")
+      ActiveRecord::MigrationContext.new(migrations_path).migrate
     end
   end
 

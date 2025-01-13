@@ -175,7 +175,7 @@ describe PolymorphicIntegerType do
       before { link }
 
       it "should have the proper source" do
-        expect(source.source_links[0].source).to eql source
+        expect(source.reload.source_links[0].source).to eql source
       end
     end
   end

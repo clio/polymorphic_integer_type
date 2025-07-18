@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bundler/gem_tasks'
 require 'yaml'
 require 'active_record'
@@ -20,18 +22,10 @@ namespace :db do
 
   desc 'Create the database'
   task :create do
-    if database_config[:adapter] == 'sqlite3'
-      # For SQLite3, just ensure the directory exists
-      db_file = database_config.fetch(:database)
-      FileUtils.mkdir_p(File.dirname(db_file)) unless File.dirname(db_file) == '.'
-      puts 'Database created (SQLite3 will create file on first connection).'
-    else
-      # For other databases (MySQL, PostgreSQL, etc.)
-      admin_config = database_config.merge(database: "mysql")
-      ActiveRecord::Base.establish_connection(admin_config)
-      ActiveRecord::Base.connection.create_database(database_config.fetch(:database))
-      puts 'Database created.'
-    end
+    # SQLite3 creates the database file automatically, just ensure directory exists
+    db_file = database_config.fetch(:database)
+    FileUtils.mkdir_p(File.dirname(db_file)) unless File.dirname(db_file) == '.'
+    puts 'Database ready (SQLite3).'
   end
 
   desc 'Migrate the database'
@@ -53,16 +47,9 @@ namespace :db do
 
   desc 'Drop the database'
   task :drop do
-    if database_config[:adapter] == 'sqlite3'
-      # For SQLite3, just delete the file
-      db_file = database_config.fetch(:database)
-      File.delete(db_file) if File.exist?(db_file)
-    else
-      # For other databases (MySQL, PostgreSQL, etc.)
-      admin_config = database_config.merge(database: "mysql")
-      ActiveRecord::Base.establish_connection(admin_config)
-      ActiveRecord::Base.connection.drop_database(database_config.fetch(:database))
-    end
+    # For SQLite3, just delete the file
+    db_file = database_config.fetch(:database)
+    File.delete(db_file) if File.exist?(db_file)
     puts 'Database deleted.'
   end
 

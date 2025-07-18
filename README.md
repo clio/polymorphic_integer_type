@@ -144,9 +144,16 @@ You'll need to have git, Ruby, and MySQL. Then get up and running with a few com
 $ git clone ...
 $ bundle install
 $ vim spec/support/database.yml # Update username and password
-$ bin/setup
+$ bin/setup # Uses SQLite3 for testing (no additional setup required)
 $ bundle exec rspec
 ```
+
+## Database Compatibility
+
+This gem works with any database supported by ActiveRecord (SQLite3, MySQL, PostgreSQL, etc.). 
+The gem extends ActiveRecord's polymorphic associations and doesn't use database-specific features.
+
+Development and testing uses SQLite3 for simplicity.
 
 ## Contributing
 

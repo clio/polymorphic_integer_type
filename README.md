@@ -138,7 +138,7 @@ Lastly, you will need to be careful of any place where you are doing raw SQL que
 
 ## Setup
 
-You'll need to have git, Ruby, and MySQL. Then get up and running with a few commands:
+You'll need to have git and Ruby. Then get up and running with a few commands:
 
 ```bash
 $ git clone ...

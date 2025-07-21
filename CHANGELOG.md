@@ -31,3 +31,6 @@
 ### Added
 
 - Add Rails 8.0 compatibility (requires Ruby 3.2+)
+
+### Removed 
+- Remove unsupported rails versions 6.x

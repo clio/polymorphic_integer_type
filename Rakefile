@@ -31,16 +31,7 @@ namespace :db do
   desc 'Migrate the database'
   task :migrate do
     ActiveRecord::Base.establish_connection(database_config)
-
-    # Handle different Rails versions
-    active_record_version = Gem::Version.new(ActiveRecord::VERSION::STRING)
-
-    if active_record_version >= Gem::Version.new("6.0")
-      ActiveRecord::MigrationContext.new(migration_path).migrate
-    else
-      ActiveRecord::Migrator.migrate(migration_path)
-    end
-
+    ActiveRecord::MigrationContext.new(migration_path).migrate
     Rake::Task['db:schema'].invoke
     puts 'Database migrated.'
   end

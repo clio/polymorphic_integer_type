@@ -14,7 +14,6 @@ jobs:
       fail-fast: false
       matrix:
         gemfile:
-          - Gemfile.rails-6.1-stable
           - Gemfile.rails-7.0-stable
           - Gemfile.rails-7.2-stable
           - Gemfile.rails-8.0-stable

@@ -118,12 +118,7 @@ module PolymorphicIntegerType
         if is_polymorphic_integer
           reflection.foreign_integer_type = foreign_integer_type
           reflection.integer_type = integer_type
-
-          if Gem::Version.new(ActiveRecord::VERSION::STRING) < Gem::Version.new("6.1")
-            ActiveRecord::Associations::Association.prepend(PolymorphicIntegerType::PolymorphicForeignAssociationExtension)
-          else
-            ActiveRecord::Associations::ForeignAssociation.prepend(PolymorphicIntegerType::PolymorphicForeignAssociationExtension)
-          end
+          ActiveRecord::Associations::ForeignAssociation.prepend(PolymorphicIntegerType::PolymorphicForeignAssociationExtension)
         end
       end
 

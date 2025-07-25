@@ -26,3 +26,11 @@
 
 - Remove unsupported rails versions(5.0, 5.2, 6.0) and ruby version(2.7)
 
+## v3.4.0 (2024-XX-XX)
+
+### Added
+
+- Add Rails 8.0 compatibility (requires Ruby 3.2+)
+
+### Removed 
+- Remove unsupported rails versions 6.x

@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.5.0 (2026-04-30)
+
+### Added
+
+- Add Rails 8.1 compatibility. Rails 8.1 changed `PredicateBuilder::PolymorphicArrayValue#initialize` from `(associated_table, values)` to `(reflection, values)`, dropping the `@associated_table` ivar. `type_to_ids_mapping` now reads `@reflection` when available and falls back to `@associated_table.send(:reflection)` for older Rails versions.
+
 ## v3.2.1 (2023-12-14)
 
 ### Fixed

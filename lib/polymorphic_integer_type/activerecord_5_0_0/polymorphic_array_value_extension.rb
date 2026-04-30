@@ -10,7 +10,15 @@ module PolymorphicIntegerType
     # end
 
     def type_to_ids_mapping
-      association = @associated_table.send(:reflection)
+      # Rails 8.1 changed `PredicateBuilder::PolymorphicArrayValue#initialize`
+      # from `(associated_table, values)` to `(reflection, values)`, dropping
+      # the `@associated_table` ivar. Read whichever ivar is available so this
+      # gem works across Rails 6.1–8.1.
+      association = if instance_variable_defined?(:@reflection) && @reflection
+        @reflection
+      else
+        @associated_table.send(:reflection)
+      end
 
       name = association.name
       default_hash = Hash.new { |hsh, key| hsh[key] = [] }

@@ -136,6 +136,11 @@ describe PolymorphicIntegerType do
       expect(Link.where(source: [source])).to eq [link]
     end
 
+    it "properly finds objects when passing an array of mixed-type sources" do
+      link_for_dog = Link.create(source: dog)
+      expect(Link.where(source: [cat, dog])).to match_array [link, link_for_dog]
+    end
+
     it "properly finds the object with a find_by" do
       expect(Link.find_by(source: source, id: link.id)).to eql link
     end

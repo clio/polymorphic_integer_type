@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- On Rails 7.1+, reloading a `has_many` while holding records already built into it wrote the mapped class name into the integer type column (cast to `0`), so those in-memory records pointed at the wrong type. `_write_attribute` now maps the class name back to its integer ([#69](https://github.com/clio/polymorphic_integer_type/issues/69)).
+
 ## v3.5.0 (2026-04-30)
 
 ### Added

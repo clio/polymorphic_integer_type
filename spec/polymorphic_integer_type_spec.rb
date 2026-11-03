@@ -184,6 +184,30 @@ describe PolymorphicIntegerType do
       end
     end
   end
+  context "When a has_many reload merges into records the caller still holds" do
+    # Rails 7.1+ copies the reloaded values onto the in-memory records with
+    # _write_attribute (CollectionAssociation#merge_target_lists), reading
+    # them with [] first, which returns the mapped class name (issue #69).
+    let(:source) { cat }
+
+    it "keeps the integer type on the in-memory records" do
+      first = source.source_links.new(target: kibble)
+      first.save!
+      second = source.source_links.new(target: milk)
+      second.save!
+
+      expect(source.source_links).not_to be_loaded
+      source.source_links.length
+
+      expect(source.source_links).to include(second)
+      expect(second._read_attribute("target_type")).to eql 2
+      expect(second.target_type).to eql "Drink"
+      expect(second.target).to eql milk
+      expect(first.target_type).to eql "Food"
+      expect(first._read_attribute("source_type")).to eql 2
+    end
+  end
+
   context "When a link is given polymorphic record" do
     let(:link) { Link.create(source: source) }
     let(:source) { cat }

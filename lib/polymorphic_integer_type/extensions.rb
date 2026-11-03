@@ -153,6 +153,19 @@ module PolymorphicIntegerType
       end
     end
 
+    # Rails 7.1+ copies reloaded has_many rows onto records the caller already
+    # holds with `_write_attribute(name, record[name])`
+    # (CollectionAssociation#merge_target_lists). `[]` above returns the mapped
+    # class name for these columns, so map it back to the integer here instead
+    # of letting the integer column cast "Drink" to 0.
+    def _write_attribute(attr_name, value)
+      name = attr_name.to_s
+      if value.is_a?(String) && _polymorphic_foreign_types.include?(name)
+        value = self.class.send("#{name}_mapping").key(value) || value
+      end
+      super(attr_name, value)
+    end
+
   end
 
 end
